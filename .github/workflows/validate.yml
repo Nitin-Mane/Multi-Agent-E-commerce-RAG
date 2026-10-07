@@ -33,7 +33,12 @@ jobs:
 
       - name: Lint Python sources
         # Udacity supplies tests/test_agent.py as an immutable rubric artifact.
-        run: ruff check config.py src infrastructure tests --exclude tests/test_agent.py
+        # Keep the CI contract stable across Ruff releases by selecting the
+        # core correctness rules explicitly; broader style checks are optional.
+        run: >-
+          ruff check config.py src infrastructure tests
+          --select E4,E7,E9,F
+          --exclude tests/test_agent.py
 
       - name: Compile Python sources
         run: python -m compileall -q config.py src tests
