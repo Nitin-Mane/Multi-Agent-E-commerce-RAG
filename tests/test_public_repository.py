@@ -1,0 +1,138 @@
+"""Public-repository safety and evaluator-readiness checks.
+
+These tests intentionally avoid AWS calls so they can run in GitHub Actions
+without credentials.
+"""
+
+from __future__ import annotations
+
+import re
+import subprocess
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+REQUIRED_FILES = {
+    ".env.example",
+    ".gitignore",
+    "CONTRIBUTING.md",
+    "README.md",
+    "SECURITY.md",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "agentcore/agentcore.example.json",
+    "agentcore/aws-targets.example.json",
+    "docs/EVALUATOR_GUIDE.md",
+    "docs/SYSTEM_ARCHITECTURE.md",
+    "docs/CI_CD.md",
+    "docs/RUBRIC_MATRIX.md",
+    ".github/workflows/validate.yml",
+    ".github/workflows/deploy.yml",
+}
+
+FORBIDDEN_PATH_PARTS = {
+    ".aws",
+    ".cache",
+    ".env",
+    ".venv",
+    "__pycache__",
+    "build",
+    "cdk.out",
+    "node_modules",
+}
+
+SENSITIVE_PATTERNS = {
+    "AWS access key": re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"),
+    "AWS secret assignment": re.compile(
+        r"(?i)aws_secret_access_key\s*[=:]\s*[A-Za-z0-9/+=]{20,}"
+    ),
+    "AWS session token assignment": re.compile(
+        r"(?i)aws_session_token\s*[=:]\s*[A-Za-z0-9/+=]{20,}"
+    ),
+    "12-digit AWS account ID": re.compile(r"(?<![<\d])\d{12}(?![>\d])"),
+}
+
+
+def tracked_paths():
+    """Return Git-tracked paths so local caches cannot create false failures."""
+    result = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    )
+    for raw_path in result.stdout.split(b"\0"):
+        if raw_path:
+            yield ROOT / raw_path.decode("utf-8")
+
+
+def repository_text_files():
+    for path in tracked_paths():
+        if not path.is_file():
+            continue
+        if path.suffix.lower() in {".png", ".jpg", ".jpeg", ".pdf", ".docx", ".zip"}:
+            continue
+        if path == Path(__file__).resolve():
+            continue
+        yield path
+
+
+class PublicRepositoryTests(unittest.TestCase):
+    def test_required_public_repository_files_exist(self):
+        missing = sorted(path for path in REQUIRED_FILES if not (ROOT / path).is_file())
+        self.assertFalse(missing, f"Missing public-repository files: {missing}")
+
+    def test_readme_contains_evaluator_sections(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        required_headings = {
+            "## Architecture",
+            "## Quick start",
+            "## Testing",
+            "## Rubric coverage",
+            "## Security and privacy",
+            "## Known limitation",
+        }
+        missing = sorted(heading for heading in required_headings if heading not in readme)
+        self.assertFalse(missing, f"README is missing sections: {missing}")
+
+    def test_repository_does_not_publish_private_runtime_files(self):
+        forbidden_files = {
+            "agentcore/agentcore.json",
+            "agentcore/aws-targets.json",
+            ".env",
+        }
+        published = sorted(path for path in forbidden_files if (ROOT / path).exists())
+        self.assertFalse(
+            published,
+            f"Private runtime files must not be published: {published}",
+        )
+
+    def test_repository_contains_no_sensitive_values(self):
+        findings: list[str] = []
+        for path in repository_text_files():
+            content = path.read_text(encoding="utf-8", errors="replace")
+            for label, pattern in SENSITIVE_PATTERNS.items():
+                if pattern.search(content):
+                    findings.append(f"{path.relative_to(ROOT)}: {label}")
+        self.assertFalse(findings, "Sensitive values found:\n" + "\n".join(findings))
+
+    def test_no_generated_or_local_directories_are_published(self):
+        findings = []
+        for path in tracked_paths():
+            relative_parts = set(path.relative_to(ROOT).parts)
+            if relative_parts & FORBIDDEN_PATH_PARTS:
+                findings.append(str(path.relative_to(ROOT)))
+        self.assertFalse(findings, f"Generated/local paths found: {sorted(findings)}")
+
+    def test_runtime_requirements_cover_imported_packages(self):
+        requirements_path = ROOT / "requirements.txt"
+        self.assertTrue(requirements_path.is_file(), "Missing requirements.txt")
+        requirements = requirements_path.read_text(encoding="utf-8").lower()
+        for package in ("boto3", "bedrock-agentcore", "strands-agents", "python-dotenv"):
+            self.assertIn(package, requirements, f"Missing runtime dependency: {package}")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# Development-only quality tooling
+ruff>=0.14.0,<1.0.0

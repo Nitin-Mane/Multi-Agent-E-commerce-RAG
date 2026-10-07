@@ -1,0 +1,62 @@
+name: Deploy foundation stack
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_region:
+        description: AWS region for the course resources
+        required: true
+        default: us-east-1
+        type: string
+      stack_name:
+        description: CloudFormation stack name
+        required: true
+        default: udacity-agentcore
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: aws-course-foundation
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Validate and deploy CloudFormation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: aws-course
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure short-lived AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Confirm deployment identity
+        run: aws sts get-caller-identity
+
+      - name: Validate CloudFormation template
+        run: aws cloudformation validate-template --template-body file://infrastructure/starter_stack.yaml
+
+      - name: Deploy foundation resources
+        run: >-
+          aws cloudformation deploy
+          --template-file infrastructure/starter_stack.yaml
+          --stack-name "${{ inputs.stack_name }}"
+          --parameter-overrides ProjectName="${{ inputs.stack_name }}"
+          --capabilities CAPABILITY_NAMED_IAM
+          --no-fail-on-empty-changeset
+
+      - name: Show sanitized stack outputs
+        run: >-
+          aws cloudformation describe-stacks
+          --stack-name "${{ inputs.stack_name }}"
+          --query "Stacks[0].Outputs[].{Key:OutputKey,Description:Description}"
+          --output table

@@ -1,0 +1,47 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.aws/
+credentials
+*.pem
+*.key
+
+# Deployment-specific AgentCore configuration
+agentcore/agentcore.json
+agentcore/aws-targets.json
+!agentcore/agentcore.example.json
+!agentcore/aws-targets.example.json
+.cli/
+.cache/
+runtime/
+*.zip
+
+# CDK and Node.js generated content
+node_modules/
+cdk.out/
+dist/
+
+# Build, test, and local evidence output
+build/
+payload*.json
+response*.json
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Python environments and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# IDE and operating-system metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Optional local code-graph output
+graphify-out/
