@@ -16,6 +16,37 @@ This repository contains my Udacity AWS assignment implementation of a multi-age
 
 The credential-free Task 2 validation passes **40/40** locally. AWS-backed results depend on the evaluator's deployed resources and are documented with sanitized raw output in the private course submission; cloud identifiers, credentials, generated deployment artifacts, and private evidence are intentionally excluded from this public repository.
 
+```mermaid
+flowchart TD
+    Client[Customer request] --> Runtime[Amazon Bedrock AgentCore Runtime]
+    Runtime --> Guardrail[Amazon Bedrock Guardrail]
+    Guardrail --> Orchestrator[OrchestratorAgent<br/>Claude Haiku 4.5]
+    Orchestrator --> Inventory[InventoryAgent<br/>Claude Sonnet 4.5]
+    Orchestrator --> Refund[RefundAgent<br/>Claude Sonnet 4.5]
+    Orchestrator --> Policy[PolicyAgent<br/>Claude Sonnet 4.5]
+    Orchestrator --> Communication[CommunicationAgent<br/>Claude Sonnet 4.5]
+    Policy --> Returns[Returns KB]
+    Policy --> Shipping[Shipping KB]
+    Policy --> Warranty[Warranty KB]
+    Orchestrator <--> State[(DynamoDB Workflow State)]
+    Runtime <--> Memory[AgentCore Memory]
+    Runtime --> Observability[CloudWatch Logs and AWS X-Ray]
+    Communication --> Runtime
+
+    classDef entry fill:#232F3E,color:#FFFFFF,stroke:#8FA7C1,stroke-width:2px;
+    classDef managed fill:#146EB4,color:#FFFFFF,stroke:#0B4F86,stroke-width:2px;
+    classDef agent fill:#6B3FD4,color:#FFFFFF,stroke:#4A2A96,stroke-width:2px;
+    classDef retrieval fill:#007A78,color:#FFFFFF,stroke:#005C5A,stroke-width:2px;
+    classDef data fill:#FF9900,color:#111827,stroke:#B36B00,stroke-width:2px;
+    classDef observe fill:#1F883D,color:#FFFFFF,stroke:#116329,stroke-width:2px;
+    class Client entry;
+    class Runtime,Guardrail,Orchestrator managed;
+    class Inventory,Refund,Policy,Communication agent;
+    class Returns,Shipping,Warranty retrieval;
+    class State,Memory data;
+    class Observability observe;
+```
+
 ## Architecture
 
 The application uses a hub-and-spoke design:
@@ -152,6 +183,8 @@ See [CI/CD Guide](docs/CI_CD.md) for setup, controls, and the parts of AgentCore
 | **Total** | Automated rubric validation, October 7, 2026 | **120/120** |
 
 The detailed criterion-to-evidence mapping is in [Rubric Matrix](docs/RUBRIC_MATRIX.md), and the recommended review sequence is in [Evaluator Guide](docs/EVALUATOR_GUIDE.md).
+
+The [Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) explains what each submitted visual demonstrates, how it maps to the rubric, which evidence is safe for the public repository, and which account-specific artifacts remain only in the private course submission.
 
 ## Security and privacy
 
