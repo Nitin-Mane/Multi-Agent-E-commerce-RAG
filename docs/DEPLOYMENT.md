@@ -67,7 +67,7 @@ If a model invocation reports an AWS Marketplace or model-access error, treat it
 
 ## 7. Private submission evidence
 
-Capture screenshots only after the relevant status is visible. Redact account numbers, role ARNs, resource identifiers, request IDs, credentials, and personal browser details before submission. The public GitHub repository should contain sanitized diagrams and documentation, not raw console screenshots.
+Capture screenshots only after the relevant status is visible. The course submission may show the Udacity account number, role/resource ARNs, resource IDs, and request/trace IDs when they help an evaluator verify the deployment. Always remove access keys, secret keys, session tokens, passwords, federation URLs, and unrelated personal browser data.
 
 ## Cleanup
 
@@ -91,4 +91,4 @@ Knowledge-base service roles created manually in the AWS Console are preserved b
 7. Review CloudWatch log groups, IAM roles, and any retained KMS keys.
 8. Recheck the account's billing and cost-management pages.
 
-Never publish the populated local configuration or unredacted cleanup screenshots.
+Never publish authentication credentials. The course repository may include a populated `.env` only when it contains non-secret resource identifiers and has been checked for credential fields and secret patterns.

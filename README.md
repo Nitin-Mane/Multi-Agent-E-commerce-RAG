@@ -14,7 +14,7 @@
 
 This repository contains my Udacity AWS assignment implementation of a multi-agent retrieval-augmented generation (RAG) assistant for an e-commerce customer-support use case. A supervisor coordinates inventory, refund, policy, and communication specialists. The solution uses Amazon Bedrock, Amazon Bedrock Knowledge Bases with S3 Vectors, DynamoDB, S3, Bedrock AgentCore Runtime, AgentCore Memory, CloudWatch, and AWS X-Ray.
 
-The credential-free Task 2 validation passes **40/40** locally. AWS-backed results depend on the evaluator's deployed resources and are documented with sanitized raw output in the private course submission; cloud identifiers, credentials, generated deployment artifacts, and private evidence are intentionally excluded from this public repository.
+The official assignment validation records **120/120**. A fresh end-to-end experiment was also completed in the Udacity AWS sandbox on **October 8, 2026** and produced a connected AWS X-Ray service map. Non-secret account and resource identifiers are included for evaluator traceability; authentication credentials are never committed.
 
 ```mermaid
 flowchart TD
@@ -83,7 +83,7 @@ See [System Architecture](docs/SYSTEM_ARCHITECTURE.md) for the color-coded deplo
 - Guardrail-aware response handling and operational error messages
 - Infrastructure-as-code for the data plane and AgentCore prerequisites
 - Credential-free unit tests plus AWS-backed assignment validation
-- Public-repository controls that reject secrets, account numbers, and local deployment artifacts
+- Repository controls that reject AWS credentials while allowing evaluator-visible, non-secret resource identifiers
 
 ## Repository layout
 
@@ -96,6 +96,7 @@ See [System Architecture](docs/SYSTEM_ARCHITECTURE.md) for the color-coded deplo
 |-- src/                       # Agents, tools, workflow state, and runtime entrypoint
 |-- tests/                     # Assignment and public-repository validation
 |-- .env.example               # Safe environment-variable template
+|-- .env                       # Populated non-secret evaluator resource identifiers
 |-- config.py                  # Shared application configuration
 |-- requirements.txt           # Runtime dependencies
 `-- requirements-dev.txt       # Contributor dependencies
@@ -122,10 +123,10 @@ AWS services can incur charges. Use a sandbox account where possible, follow acc
    pip install -r requirements-dev.txt
    ```
 
-2. Create local configuration from the sanitized examples:
+2. Review the populated evaluator configuration. To target a different account, start from the example:
 
    ```powershell
-   Copy-Item .env.example .env
+   Copy-Item .env.example .env -Force
    Copy-Item agentcore\agentcore.example.json agentcore\agentcore.json
    Copy-Item agentcore\aws-targets.example.json agentcore\aws-targets.json
    ```
@@ -137,7 +138,7 @@ AWS services can incur charges. Use a sandbox account where possible, follow acc
    aws configure get region
    ```
 
-4. Populate only the local ignored files with your deployed resource identifiers. Never commit credentials, account IDs, ARNs, or session tokens.
+4. Populate resource identifiers as needed. Never place access keys, secret keys, session tokens, passwords, or federation URLs in repository files.
 
 5. Follow [Deployment Guide](docs/DEPLOYMENT.md) to provision the resources, ingest the sample data, create the knowledge bases, deploy the runtime, and validate the application.
 
@@ -180,18 +181,25 @@ See [CI/CD Guide](docs/CI_CD.md) for setup, controls, and the parts of AgentCore
 | Task 4 - AgentCore Memory | Memory deployment and seven-day summary strategy | 15/15 |
 | Task 5 - knowledge bases | `src/bedrock_kb_retrieval.py`, `infrastructure/` | 25/25 |
 | Task 6 - observability | `src/agent_observability.py`, CloudWatch and X-Ray configuration | 20/20 |
-| **Total** | Automated rubric validation, October 7, 2026 | **120/120** |
+| **Total** | Automated rubric validation, rechecked October 8, 2026 | **120/120** |
 
 The detailed criterion-to-evidence mapping is in [Rubric Matrix](docs/RUBRIC_MATRIX.md), and the recommended review sequence is in [Evaluator Guide](docs/EVALUATOR_GUIDE.md).
 
-The [Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) explains what each submitted visual demonstrates, how it maps to the rubric, which evidence is safe for the public repository, and which account-specific artifacts remain only in the private course submission.
+The [Live Experiment and Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) documents the AWS account, region, exact commands, model configuration, trace IDs, resource identifiers, screenshots, rubric mapping, and reviewer verification sequence.
+
+### Required submission evidence
+
+- [Original 120/120 test screenshot](diagrams/official-tests-120-of-120-original.png)
+- [Original AWS X-Ray service-map screenshot](diagrams/aws-xray-service-map-original.jpg)
+- [Populated non-secret `.env`](.env)
+- [Detailed evidence report](docs/EVIDENCE_REPORT.md)
 
 ## Security and privacy
 
-- This repository contains no AWS keys, session tokens, account numbers, deployed resource IDs, or private `.env` files.
-- Example configuration uses placeholders and is safe to copy locally.
-- `.gitignore` excludes credentials, generated CDK output, runtime bundles, local evidence, and response payloads.
-- The public-repository test fails if common AWS credential patterns or literal 12-digit account IDs appear in tracked project files.
+- This repository contains the Udacity account number and non-secret deployed resource IDs required for evaluation.
+- The populated `.env` contains no authentication material; the example remains available for redeployment.
+- `.gitignore` excludes credentials, generated CDK output, runtime bundles, and response payloads.
+- Repository safety tests reject common AWS access-key, secret-key, and session-token patterns.
 - Use short-lived AWS credentials and least-privilege roles; do not place secrets in source code.
 - Observability uses process-local keyed pseudonyms for customer/session identifiers, omits request text by default, and never logs tool argument values. Keep `AGENT_OBSERVABILITY_INCLUDE_SENSITIVE=false` outside controlled debugging.
 - The optional AgentCore Gateway uses AWS IAM authorization and a tagged, dedicated role restricted to the configured Lambda ARNs. Reuse fails closed if an existing gateway or role does not match those controls.
@@ -202,7 +210,7 @@ If you discover a security issue, follow [SECURITY.md](SECURITY.md) rather than 
 
 ## Known limitation
 
-During the final live test in the Udacity sandbox, Amazon Bedrock rejected the requested Anthropic Claude Haiku 4.5 model because the sandbox lacked the required AWS Marketplace entitlement. The project implementation and provisioned-resource rubric checks still passed at 120/120. In an authorized account, enable the required model access or select an approved model through local configuration before running the end-to-end invocation. No successful live-model response is claimed here.
+The rubric-required defaults remain Claude Haiku 4.5 for orchestration and Claude Sonnet 4.5 for workers. The Udacity sandbox did not grant the Marketplace entitlement for Haiku 4.5, so the fresh evidence run used the documented `ORCHESTRATOR_MODEL_ID=amazon.nova-lite-v1:0` runtime override while retaining Sonnet 4.5 workers. All three scenarios completed and published X-Ray traces; this override does not change the submitted default in `config.py`.
 
 ## Cleanup
 

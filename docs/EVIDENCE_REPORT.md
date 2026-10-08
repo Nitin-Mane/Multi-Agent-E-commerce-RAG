@@ -1,125 +1,128 @@
-# Screenshot Evidence Report
+# Live Experiment and Screenshot Evidence Report
 
-## Purpose and evidence boundary
+## Reviewer summary
 
-This report helps an evaluator connect the project screenshots to the implementation and rubric. It distinguishes three different kinds of evidence:
+This report is the evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. The previous review failed because the GitHub archive did not contain the required AWS X-Ray Service Map image. The repository now includes the missing original console evidence, the original 120/120 result, the populated non-secret `.env`, source code, and a direct mapping from every artifact to the rubric.
 
-1. **Public presentation evidence** explains the architecture and request flow without exposing deployed identifiers.
-2. **Sanitized verification evidence** reports recorded test outcomes after account details have been removed.
-3. **Private deployment evidence** contains account-specific resource identifiers and remains in the course submission package rather than the public repository.
+## Environment verified
 
-Screenshots complement the source code and raw test output; they do not replace them. The authoritative implementation is in `src/`, `config.py`, `infrastructure/`, and `agentcore/cdk/`. The authoritative criterion mapping is in [Rubric Matrix](RUBRIC_MATRIX.md).
+| Field | Verified value |
+|---|---|
+| Evidence date | October 8, 2026 |
+| AWS account | `028612373481` (Udacity sandbox) |
+| Region | `us-east-1` (N. Virginia) |
+| Project | `udacity-agentcore` |
+| Runtime | `udacity_agentcore_runtime-u71naiDhDx` |
+| Guardrail | `up6axh4lt0of`, version `1` |
+| Returns KB | `NYXVNW9GJN` |
+| Shipping KB | `BTHTUIKUYI` |
+| Warranty KB | `JHJBT4FYVM` |
+| Official rubric result | `120/120` |
 
-## Public architecture overview
+These account and resource identifiers are intentionally visible for course evaluation. They are not authentication secrets. The repository does **not** contain an AWS access key, secret access key, session token, password, federation URL, or browser sign-in token.
+
+## Fresh end-to-end experiment
+
+The experiment was rerun from the repository root against the Udacity sandbox with the exact rubric entrypoint:
+
+```powershell
+$env:PYTHONUTF8 = "1"
+$env:ORCHESTRATOR_MODEL_ID = "amazon.nova-lite-v1:0"
+python src/agent_orchestrator.py test
+```
+
+`PYTHONUTF8=1` prevents the Windows console from rejecting the test runner's Unicode separators. The temporary orchestrator override is required because the Udacity sandbox blocks the Marketplace entitlement used by the submitted Claude Haiku 4.5 default. `config.py` retains the rubric-required Haiku 4.5 default; all worker agents used the submitted Claude Sonnet 4.5 default during this run.
+
+### Observed execution
+
+| Scenario | Observed route | Result |
+|---|---|---|
+| Return request for `ORD-27176` | Orchestrator -> Inventory -> Policy -> three parallel KB retrievers -> Refund -> Communication | Completed |
+| Premium return-policy question | Orchestrator -> Policy -> three parallel KB retrievers -> Communication | Completed |
+| Five items at $29.99 with 10% discount | Orchestrator arithmetic -> Communication | Completed; `$134.96` |
+
+The runner reported successful publication of these X-Ray trace IDs:
+
+- `1-6ac75d38-9e9437bed32ffb5c2492dd5c`
+- `1-6ac75d93-e77bb0d0f86d464a040337f8`
+- `1-6ac75dc9-345ba4b7c64e92f4928d5bbf`
+
+After the run, CloudWatch X-Ray was refreshed with the **5 minute** range in `us-east-1`. The live map showed `NovaMart-Orchestrator` connected to `InventoryAgent`, `PolicyAgent`, `RefundAgent`, `CommunicationAgent`, `KnowledgeBase-returns`, `KnowledgeBase-shipping`, and `KnowledgeBase-warranty`.
+
+## Required X-Ray Service Map evidence
+
+![Original AWS X-Ray Service Map showing NovaMart-Orchestrator, worker agents, and three Knowledge Base nodes](../diagrams/aws-xray-service-map-original.jpg)
+
+### What the reviewer should verify
+
+1. The AWS console is on the X-Ray/CloudWatch Trace Map in `us-east-1`.
+2. `NovaMart-Orchestrator` is the central service node.
+3. Worker nodes include `InventoryAgent`, `PolicyAgent`, `RefundAgent`, and `CommunicationAgent`.
+4. Policy retrieval includes the returns, shipping, and warranty Knowledge Base nodes.
+5. Directed edges form the required orchestrator -> worker -> Knowledge Base call chain.
+
+This is an original AWS Console capture, not a Mermaid diagram or a reconstructed graphic. The live map was regenerated and visually rechecked after the fresh experiment above.
+
+## Required official test evidence
+
+![Original official assignment test result showing 120 out of 120](../diagrams/official-tests-120-of-120-original.png)
+
+| Task | Rubric area | Recorded score |
+|---|---|---:|
+| Task 2 | Multi-agent graph, tools, models, and routing | 40/40 |
+| Task 3 | Guardrail and AgentCore Runtime | 20/20 |
+| Task 4 | AgentCore Memory | 15/15 |
+| Task 5 | Knowledge Bases and parallel retrieval | 25/25 |
+| Task 6 | CloudWatch and X-Ray observability | 20/20 |
+| **Total** | **Official rubric verification** | **120/120** |
+
+The screenshot intentionally shows the Udacity account number so the evaluator can correlate the result with the deployed sandbox. A sanitized copy remains available as `diagrams/official-tests-120-of-120-redacted.png` for contexts where the account number is unnecessary.
+
+## Architecture and request-flow evidence
 
 ![NovaMart multi-agent architecture overview](../diagrams/architecture-overview.png)
 
-### What this screenshot shows
-
-- A supervisor-and-workers architecture with OrchestratorAgent coordinating InventoryAgent, PolicyAgent, RefundAgent, and CommunicationAgent.
-- Shared workflow state stored in DynamoDB.
-- Parallel retrieval beneath PolicyAgent.
-- The primary platform components: Strands Agents, Amazon Bedrock AgentCore, Bedrock foundation models, DynamoDB, Bedrock Knowledge Bases, S3 Vectors, and `ThreadPoolExecutor`.
-
-### How to interpret it
-
-This is a presentation-level overview rather than a deployment console capture. The diagram is intentionally compact; [System Architecture](SYSTEM_ARCHITECTURE.md) contains the implementation-level topology and color-coded Mermaid diagrams. `config.py` is authoritative for the submitted Claude Haiku 4.5 orchestrator and Claude Sonnet 4.5 worker defaults.
-
-### Rubric relationship
-
-| Rubric area | Supporting implementation |
-|---|---|
-| Task 2 — multi-agent graph | `src/agent_orchestrator.py` agent builders and routing tools |
-| Task 4 — shared context | DynamoDB `WorkflowStateTable` and AgentCore Memory configuration |
-| Task 5 — multi-agent RAG | PolicyAgent with three parallel knowledge-base retrievers |
-
-## Public request-flow scenarios
-
 ![Order, policy, and direct-answer request flows](../diagrams/request-flow-scenarios.png)
 
-### What this screenshot shows
-
-- **Order or return path:** session initialization, inventory lookup, refund/status evaluation, and final communication.
-- **Policy path:** PolicyAgent coordinates three retrievers in parallel before CommunicationAgent writes the response.
-- **Calculation path:** the orchestrator handles arithmetic without unnecessary domain workers but still calls CommunicationAgent last.
-- DynamoDB workflow state persists the session and each completed worker result across every path.
-
-### Routing details reviewers should verify
-
-| Request type | Expected workers before CommunicationAgent |
-|---|---|
-| Account or customer tier | Inventory only; never Policy |
-| Order status or history | Inventory, then Refund for evaluation only |
-| Policy-only question | Policy |
-| Explicit return or refund | Inventory, then Policy, then Refund |
-| Mixed order and policy | Inventory, then Policy |
-| Arithmetic | No Inventory, Policy, or Refund worker |
-
-RefundAgent appearing in the order-status route does not mean a refund is automatically created. The routing prompt explicitly prohibits initiating a refund unless the customer requests one. These invariants are covered by `tests/test_routing_contract.py`.
-
-## Sanitized official test result
-
-![Sanitized official rubric verification showing 120 out of 120](../diagrams/official-tests-120-of-120-redacted.png)
-
-### Recorded result
-
-| Task | Evidence category | Recorded score |
-|---|---|---:|
-| Task 2 | Multi-agent graph and tools | 40/40 |
-| Task 3 | Guardrail and AgentCore Runtime | 20/20 |
-| Task 4 | AgentCore Memory | 15/15 |
-| Task 5 | Knowledge bases and retrieval | 25/25 |
-| Task 6 | CloudWatch and X-Ray | 20/20 |
-| **Total** | **Official rubric verification** | **120/120** |
-
-The public image is a privacy-redacted rendering of the recorded result. The AWS account number was removed before publication. The unmodified evidence record remains in the private submission package.
-
-### Important limitation
-
-The recorded rubric and resource checks passed, but the final live Claude Haiku invocation in the Udacity sandbox was blocked by an AWS Marketplace model-entitlement restriction. The repository therefore does not claim a successful end-to-end model response from that sandbox. This limitation is separate from the verified provisioning, code, retrieval, memory, and observability outcomes.
-
-## Complete screenshot inventory
-
-The following table documents all seven screenshots supplied with the private course submission. Only rows marked **Public** are embedded in this repository.
-
-| File | Evidence represented | Rubric mapping | Publication status | Reviewer note |
-|---|---|---|---|---|
-| `01-aws-deployment-evidence.png` | Foundation stack, runtime stack, AgentCore Runtime, Memory, Guardrail, and network status | Tasks 3 and 4 | **Private** | Contains the Udacity account number and deployed resource identifiers. Use the private submission copy to verify account-specific deployment state. |
-| `02-knowledge-bases-evidence.png` | Returns, shipping, and warranty knowledge bases; synchronization; parallel retrieval score | Task 5 | **Private** | Contains deployed knowledge-base identifiers. The public architecture report documents the same component relationships without those identifiers. |
-| `03-observability-evidence.png` | Runtime readiness, CloudWatch logging, log group, X-Ray indexing, request receipt, and score | Task 6 | **Private** | Contains runtime/log resource details. It also records that the request reached AgentCore before the model-entitlement failure. |
-| `04-official-tests-120-of-120.png` | Consolidated official test scores for Tasks 2–6 | Tasks 2–6 | **Public after redaction** | Published as `official-tests-120-of-120-redacted.png`; the account number is removed. |
-| `05-architecture-overview.png` | Supervisor/worker architecture, parallel RAG, and shared workflow state | Tasks 2, 4, and 5 | **Public** | Used as the README cover and embedded above. Model defaults in `config.py` remain authoritative. |
-| `06-agents-and-tools-reference.png` | Agent responsibilities, tool inventory, and workflow-state schema | Tasks 2 and 4 | **Private reference** | The visual contains older model labels. The current submitted defaults and tool matrix are documented in [System Architecture](SYSTEM_ARCHITECTURE.md). |
-| `07-request-flow-scenarios.png` | Order/refund, policy, and direct-answer routes | Task 2 | **Public** | Embedded above; detailed routing assertions are implemented in `tests/test_routing_contract.py`. |
+The implementation-level Mermaid diagrams and role/tool matrix are in [System Architecture](SYSTEM_ARCHITECTURE.md). Design rationale for the Agent Graph, Request Flow, and Shared `WorkflowState` is in [Architecture Notes](ARCHITECTURE.md).
 
 ## Evidence-to-source traceability
 
-| Evidence claim | Primary source | Automated check |
+| Claim | Primary artifact | Automated or live check |
 |---|---|---|
-| Five-agent orchestration and tool counts | `src/agent_orchestrator.py` | `tests/test_agent.py task2` |
-| Six-rule routing contract | Orchestrator system prompt | `tests/test_routing_contract.py` |
-| Claude model defaults with lab-safe overrides | `config.py` | `tests/test_model_configuration.py` |
-| Optimistic workflow-state updates | `_update_workflow_state()` | Task 2 structure checks and source review |
-| Parallel policy retrieval | `build_policy_agent()` and `ThreadPoolExecutor` | Task 2 parallel-execution check |
-| Guardrail and runtime deployment | `create_guardrail()` and runtime deployment helpers | Official Task 3 checks |
+| All TODO requirements implemented | `src/agent_orchestrator.py` | `python tests/test_agent.py task2` |
+| Five-agent graph and tool counts | Agent builders and routing tools | Official Task 2 checks |
+| Deterministic routing contract | Orchestrator prompt and `tests/test_routing_contract.py` | Routing unit tests |
+| Parallel three-KB retrieval | `build_policy_agent()` and `ThreadPoolExecutor` | Official Tasks 2 and 5 plus live output |
+| Guardrail and runtime | deployment helpers and `.env` | Official Task 3 checks |
 | Seven-day session summaries | `configure_memory()` | Official Task 4 checks |
-| Three synchronized knowledge bases | `infrastructure/create_knowledge_bases.py` | Official Task 5 checks |
-| CloudWatch and X-Ray configuration | `src/agent_observability.py` | Official Task 6 checks |
-| Public-repository privacy | `.gitignore`, examples, and sanitized assets | `tests/test_public_repository.py` and `tests/test_security_defaults.py` |
+| Three synchronized KBs | `infrastructure/create_knowledge_bases.py` and `.env` | Official Task 5 checks and live retrieval |
+| Distributed tracing | `src/agent_observability.py` | Official Task 6, fresh trace IDs, X-Ray screenshot |
+| No published AWS credentials | repository safety test | `python -m unittest tests.test_public_repository -v` |
 
 ## Recommended evaluator sequence
 
-1. Review the inline architecture diagram in the [README](../README.md).
-2. Inspect the implementation-level diagrams in [System Architecture](SYSTEM_ARCHITECTURE.md).
-3. Compare the expected routes above with the orchestrator prompt and routing tests.
-4. Review the [Rubric Matrix](RUBRIC_MATRIX.md) for criterion-level evidence.
-5. Use the private submission package for raw outputs and account-specific screenshots.
-6. Treat the Marketplace entitlement as a documented sandbox limitation, not as evidence of a successful live-model response.
+1. Open the root [README](../README.md) and confirm the required-artifact links.
+2. Inspect the populated [`.env`](../.env); confirm resource IDs are present and credential variables are absent.
+3. Inspect `src/agent_orchestrator.py` for the completed orchestration, worker, state, retrieval, deployment, and tracing implementation.
+4. Review the original 120/120 image above.
+5. Review the original X-Ray image above and follow the visible call chain from `NovaMart-Orchestrator` to Policy and Knowledge Base nodes.
+6. Review [Rubric Matrix](RUBRIC_MATRIX.md) for criterion-level source references.
+7. If temporary AWS credentials are available, rerun `python src/agent_orchestrator.py test`, wait up to five minutes, and refresh the X-Ray 5-minute map.
 
-## Privacy controls applied
+## Security boundary
 
-- No AWS access key, secret key, or session token is included.
-- The public test-result image contains no AWS account number.
-- Deployed runtime, memory, guardrail, knowledge-base, and log-group identifiers remain private.
-- The repository uses placeholders for local configuration and ignores generated deployment artifacts.
-- Public telemetry guidance omits raw request text and tool argument values by default.
+Included for evaluation:
+
+- Udacity AWS account number
+- Guardrail, Knowledge Base, runtime, request, and trace identifiers
+- original AWS console screenshots
+- populated non-secret `.env`
+
+Never included:
+
+- AWS access keys
+- AWS secret access keys
+- AWS session tokens
+- passwords, OTPs, or federation/sign-in URLs
+- personal-account credentials

@@ -26,7 +26,7 @@ Task 2 exercises source-level agent and tool behavior without making AWS API cal
 
 ## AWS-backed validation
 
-After completing `docs/DEPLOYMENT.md` and populating the ignored local configuration:
+The submitted `.env` is already populated with non-secret Udacity resource identifiers. Authenticate with an authorized temporary role, then run:
 
 ```powershell
 python tests\test_agent.py all
@@ -37,14 +37,14 @@ The current credential-free validation result is:
 | Task | Area | Result |
 |---|---|---:|
 | 2 | Agent and tool implementation | 40/40 |
-| 3 | AgentCore deployment and guardrails | Validate from private sanitized raw output |
-| 4 | AgentCore Memory | Validate from private sanitized raw output |
-| 5 | Bedrock Knowledge Bases and retrieval | Validate from private sanitized raw output |
-| 6 | CloudWatch and X-Ray observability | Validate from the private AWS console capture |
+| 3 | AgentCore deployment and guardrails | 20/20 |
+| 4 | AgentCore Memory | 15/15 |
+| 5 | Bedrock Knowledge Bases and retrieval | 25/25 |
+| 6 | CloudWatch and X-Ray observability | 20/20 plus original service-map evidence |
 
 ## Evidence scope
 
-The public repository intentionally excludes account-specific console captures and identifiers. Screenshots supplied to a course evaluator should be reviewed in the private submission package, where they can be handled according to course policy. Public code, sanitized diagrams, source-level tests, and rubric mappings are retained here.
+The repository intentionally includes the Udacity account number, deployed resource identifiers, original 120/120 test screenshot, and original X-Ray map so the GitHub archive contains every required review artifact. These are non-secret identifiers. Access keys, secret keys, session tokens, passwords, and federation URLs are excluded.
 
 AWS-backed claims are intentionally made only when supported by the raw, sanitized output and console captures packaged for the evaluator. Public documentation does not substitute diagrams for live AWS evidence.
 
@@ -57,5 +57,6 @@ AWS-backed claims are intentionally made only when supported by the raw, sanitiz
 - Confirm account/tier requests use InventoryAgent and never PolicyAgent.
 - Confirm order status routes InventoryAgent -> RefundAgent -> CommunicationAgent without initiating an unrequested refund.
 - Confirm the AgentCore HTTP entrypoint accepts a structured request.
-- Confirm secrets and account-specific files are absent.
+- Confirm `.env` contains the required resource IDs but no credential variables or secret values.
+- Confirm `diagrams/aws-xray-service-map-original.jpg` shows `NovaMart-Orchestrator` connected to worker and Knowledge Base nodes.
 - Confirm cleanup instructions identify the chargeable AWS resources.

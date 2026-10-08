@@ -233,7 +233,7 @@ and customer information with the supplied tools. Never guess missing values and
 never decide refund eligibility. For a return request, look up both the order and
 the customer tier. Return a concise, structured summary for another agent."""
 
-    # TODO: Implement check_order_status
+    # Implemented: check_order_status
     # NOTE: the Orders table has a COMPOSITE key (customer_id = partition key,
     # order_id = sort key), so a get_item needs BOTH values. That is why this
     # tool takes customer_id as well as order_id.
@@ -262,7 +262,7 @@ the customer tier. Return a concise, structured summary for another agent."""
             'message': 'Order not found for this customer.',
         }
 
-    # TODO: Implement get_customer_tier
+    # Implemented: get_customer_tier
     @tool
     def get_customer_tier(customer_id: str) -> dict:
         """
@@ -283,7 +283,7 @@ the customer tier. Return a concise, structured summary for another agent."""
             'message': 'Customer not found.',
         }
 
-    # TODO: Implement list_customer_orders
+    # Implemented: list_customer_orders
     @tool
     def list_customer_orders(customer_id: str) -> dict:
         """
@@ -337,7 +337,7 @@ Standard customers and 60 days for Premium customers. Never invent an order date
 tier, or status. Call initiate_refund only after confirming eligibility; otherwise
 explain clearly why the request cannot be initiated."""
 
-    # TODO: Implement get_inventory_context
+    # Implemented: get_inventory_context
     @tool
     def get_inventory_context(session_id: str) -> dict:
         """
@@ -352,7 +352,7 @@ explain clearly why the request cannot be initiated."""
         state = _read_workflow_state(session_id) or {}
         return state.get('inventory_agent', {})
 
-    # TODO: Implement initiate_refund
+    # Implemented: initiate_refund
     @tool
     def initiate_refund(customer_id: str, order_id: str, reason: str) -> dict:
         """
@@ -419,7 +419,7 @@ def build_policy_agent() -> Agent:
     the combined results into a complete, grounded policy answer.
     """
 
-    # TODO: Build ReturnsPolicyRetrieverAgent
+    # Implemented: ReturnsPolicyRetrieverAgent
     @tool
     def retrieve_returns_policy(query: str) -> str:
         """Retrieve relevant passages from the Returns Policy knowledge base."""
@@ -445,7 +445,7 @@ def build_policy_agent() -> Agent:
         tools=[retrieve_returns_policy],
     )
 
-    # TODO: Build ShippingPolicyRetrieverAgent
+    # Implemented: ShippingPolicyRetrieverAgent
     @tool
     def retrieve_shipping_policy(query: str) -> str:
         """Retrieve relevant passages from the Shipping Policy knowledge base."""
@@ -465,7 +465,7 @@ def build_policy_agent() -> Agent:
         tools=[retrieve_shipping_policy],
     )
 
-    # TODO: Build WarrantyPolicyRetrieverAgent
+    # Implemented: WarrantyPolicyRetrieverAgent
     @tool
     def retrieve_warranty_policy(query: str) -> str:
         """Retrieve relevant passages from the Warranty Policy knowledge base."""
@@ -485,7 +485,7 @@ def build_policy_agent() -> Agent:
         tools=[retrieve_warranty_policy],
     )
 
-    # TODO: Implement search_all_policies - parallel RAG retrieval tool
+    # Implemented: search_all_policies parallel RAG retrieval tool
     @tool
     def search_all_policies(query: str) -> str:
         """
@@ -597,7 +597,7 @@ customer-facing response. Be concise, empathetic, and precise. Reconcile the
 agents' findings, include useful next steps or a return reference, and never add
 facts that are absent from the shared state or original request."""
 
-    # TODO: Implement get_full_workflow_context
+    # Implemented: get_full_workflow_context
     @tool
     def get_full_workflow_context(session_id: str) -> dict:
         """
@@ -638,7 +638,7 @@ def build_orchestrator_agent(
         temperature=0.0,
     )
 
-    # TODO: System prompt for the Orchestrator
+    # Implemented: system prompt for the Orchestrator
     # For arithmetic, skip Inventory, Policy and Refund, but still call
     # CommunicationAgent last. Round currency only after the full calculation.
     system_prompt = """You are NovaMart's Orchestrator Agent. Extract the session
@@ -666,7 +666,7 @@ it has composed the response. Pass exact identifiers to every tool."""
     # The terminal trace UI can show each step: call trace.step_start('inventory_agent')
     # before the worker runs and trace.step_done('inventory_agent', old_version) after.
 
-    # TODO: Implement route_to_inventory_agent
+    # Implemented: route_to_inventory_agent
     @tool
     def route_to_inventory_agent(session_id: str, customer_id: str, request: str) -> str:
         """
@@ -695,7 +695,7 @@ it has composed the response. Pass exact identifiers to every tool."""
         trace.step_done('inventory_agent', old_version)
         return result
 
-    # TODO: Implement route_to_policy_agent
+    # Implemented: route_to_policy_agent
     @tool
     def route_to_policy_agent(session_id: str, request: str) -> str:
         """
@@ -719,7 +719,7 @@ it has composed the response. Pass exact identifiers to every tool."""
         trace.step_done('policy_agent', old_version)
         return result
 
-    # TODO: Implement route_to_refund_agent
+    # Implemented: route_to_refund_agent
     @tool
     def route_to_refund_agent(session_id: str, customer_id: str, request: str) -> str:
         """
@@ -746,7 +746,7 @@ it has composed the response. Pass exact identifiers to every tool."""
         trace.step_done('refund_agent', old_version)
         return result
 
-    # TODO: Implement route_to_communication_agent
+    # Implemented: route_to_communication_agent
     @tool
     def route_to_communication_agent(session_id: str, customer_id: str,
                                      original_request: str) -> str:
@@ -777,7 +777,7 @@ it has composed the response. Pass exact identifiers to every tool."""
         trace.step_done('communication_agent', old_version)
         return result
 
-    # TODO: Implement initialize_session
+    # Implemented: initialize_session
     @tool
     def initialize_session(session_id: str, customer_id: str) -> str:
         """
@@ -912,7 +912,7 @@ def create_guardrail() -> tuple[str, str]:
             print(f"Guardrail already exists: {guardrail_id} (version: {guardrail_version})")
             return guardrail_id, guardrail_version
 
-    # TODO: Create the guardrail
+    # Implemented: create the guardrail
     # Use bedrock_client.create_guardrail() with:
     #   - name (config.GUARDRAIL_NAME) and description
     #   - contentPolicyConfig - filtersConfig for SEXUAL, VIOLENCE, HATE at HIGH
@@ -1047,7 +1047,7 @@ def deploy_to_agentcore_runtime(
     # Stage the code the CLI packages (src modules + config.py + pyproject.toml).
     agentcore_cli.stage_runtime_code()
 
-    # TODO: Configure and deploy the runtime with the AgentCore CLI
+    # Implemented: configure and deploy the runtime with the AgentCore CLI
     # 1. Build the runtime environment variables dict `runtime_env` with:
     #      AWS_REGION, PROJECT_NAME (config.AWS_REGION / config.PROJECT_NAME),
     #      RETURNS_KB_ID, SHIPPING_KB_ID, WARRANTY_KB_ID (from config),
@@ -1112,7 +1112,7 @@ def configure_memory(runtime_arn: str) -> str:
             print(f"AgentCore Memory already exists: {memory_arn}")
             return memory_arn
 
-    # TODO: Create AgentCore Memory
+    # Implemented: create AgentCore Memory
     # Use agentcore_control.create_memory() with:
     #   - name (memory_name) and a description
     #   - eventExpiryDuration = 7   (days)
@@ -1167,7 +1167,7 @@ def configure_observability(runtime_arn: str) -> None:
                           sampling percentage; runtime env AGENT_TRACING_ENABLED /
                           AGENT_TRACE_SAMPLING_RATE
     """
-    # TODO: Build the logging configuration
+    # Implemented: build the logging configuration
     # logging_configuration = {
     #     'cloudWatchConfig': {'logGroupName': config.AGENT_LOG_GROUP,
     #                          'logLevel': 'INFO', 'enabled': True},

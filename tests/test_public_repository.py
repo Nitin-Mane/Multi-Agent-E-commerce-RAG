@@ -16,6 +16,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = {
+    ".env",
     ".env.example",
     ".gitignore",
     "CONTRIBUTING.md",
@@ -36,7 +37,6 @@ REQUIRED_FILES = {
 FORBIDDEN_PATH_PARTS = {
     ".aws",
     ".cache",
-    ".env",
     ".venv",
     "__pycache__",
     "build",
@@ -52,7 +52,6 @@ SENSITIVE_PATTERNS = {
     "AWS session token assignment": re.compile(
         r"(?i)aws_session_token\s*[=:]\s*[A-Za-z0-9/+=]{20,}"
     ),
-    "12-digit AWS account ID": re.compile(r"(?<![<\d])\d{12}(?![>\d])"),
 }
 
 
@@ -114,11 +113,10 @@ class PublicRepositoryTests(unittest.TestCase):
         missing = sorted(heading for heading in required_headings if heading not in readme)
         self.assertFalse(missing, f"README is missing sections: {missing}")
 
-    def test_repository_does_not_publish_private_runtime_files(self):
+    def test_repository_does_not_publish_credential_bearing_runtime_files(self):
         forbidden_files = {
             "agentcore/agentcore.json",
             "agentcore/aws-targets.json",
-            ".env",
         }
         published = sorted(path for path in forbidden_files if (ROOT / path).exists())
         self.assertFalse(
@@ -126,7 +124,7 @@ class PublicRepositoryTests(unittest.TestCase):
             f"Private runtime files must not be published: {published}",
         )
 
-    def test_repository_contains_no_sensitive_values(self):
+    def test_repository_contains_no_credentials(self):
         findings: list[str] = []
         for path in repository_text_files():
             content = path.read_text(encoding="utf-8", errors="replace")
