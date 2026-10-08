@@ -22,10 +22,13 @@ def local_images(path: Path) -> list[str]:
 class DocumentationStructureTests(unittest.TestCase):
     def test_each_review_figure_has_one_canonical_document(self):
         expected = {
-            "README.md": ["diagrams/architecture-overview.png"],
+            "README.md": [
+                "diagrams/architecture-overview.png",
+                "evidence/screenshots/aws-xray-service-map.png",
+            ],
             "docs/ARCHITECTURE.md": ["../diagrams/request-flow-scenarios.png"],
             "docs/EVIDENCE_REPORT.md": [
-                "../evidence/screenshots/aws-xray-service-map.png",
+                "../evidence/screenshots/aws-xray-service-list.png",
                 "../evidence/screenshots/official-tests-120-of-120.png",
             ],
         }

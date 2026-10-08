@@ -7,7 +7,6 @@
 ![Strands Agents](https://img.shields.io/badge/Strands-Agents-7B42BC)
 ![DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-4053D6?logo=amazondynamodb&logoColor=white)
 ![S3 Vectors](https://img.shields.io/badge/Amazon_S3-Vectors-569A31?logo=amazons3&logoColor=white)
-[![Security](https://img.shields.io/badge/security-no_committed_credentials-1F883D)](SECURITY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![NovaMart multi-agent customer-support architecture](diagrams/architecture-overview.png)
@@ -16,14 +15,22 @@
 
 This repository contains my Udacity AWS assignment implementation of a multi-agent retrieval-augmented generation (RAG) assistant for an e-commerce customer-support use case. A supervisor coordinates inventory, refund, policy, and communication specialists. The solution uses Amazon Bedrock, Amazon Bedrock Knowledge Bases with S3 Vectors, DynamoDB, S3, Bedrock AgentCore Runtime, AgentCore Memory, CloudWatch, and AWS X-Ray.
 
-The preserved official assignment transcript records **120/120** from the Udacity AWS sandbox on **October 8, 2026**. The repository also contains original AWS console captures and a connected X-Ray service map. Non-secret account and resource identifiers are included for evaluator traceability; authentication credentials are never committed.
+The official assignment run recorded **120/120** in the Udacity AWS sandbox on **October 8, 2026**. The repository includes the corresponding terminal output, AWS resource views, and connected X-Ray trace evidence.
+
+### Live AWS verification
+
+![AWS X-Ray Trace Map for the NovaMart orchestrator, workers, and knowledge bases](evidence/screenshots/aws-xray-service-map.png)
+
+*CloudWatch Trace Map captured after the final three-scenario run. The map shows the NovaMart orchestrator connected to all four workers and all three knowledge-base dependencies, with no failed nodes.*
+
+[Open the companion List view with full node names and zero faults](evidence/screenshots/aws-xray-service-list.png).
 
 ## Documentation
 
 | Document | Purpose |
 |---|---|
 | [Architecture](docs/ARCHITECTURE.md) | AWS topology, Agent Graph, Request Flow, Shared `WorkflowState`, and design decisions |
-| [Evidence report](docs/EVIDENCE_REPORT.md) | Original AWS screenshots, sanitized raw transcripts, experiment details, and evidence interpretation |
+| [Evidence report](docs/EVIDENCE_REPORT.md) | AWS screenshots, test transcripts, experiment details, and evidence interpretation |
 | [Rubric matrix](docs/RUBRIC_MATRIX.md) | Criterion-level traceability, reviewer sequence, and verification checklist |
 | [Deployment guide](docs/DEPLOYMENT.md) | Provisioning, validation, evidence capture, and cleanup |
 | [CI/CD and lifecycle](docs/CI_CD.md) | GitHub Actions controls, protected AWS delivery, and resource lifecycle |
@@ -151,22 +158,21 @@ See [Architecture](docs/ARCHITECTURE.md) for the color-coded deployment topology
 - AgentCore Runtime deployment configuration and invocation support
 - Guardrail-aware response handling and operational error messages
 - Infrastructure-as-code for the data plane and AgentCore prerequisites
-- Credential-free unit tests plus AWS-backed assignment validation
-- Repository controls that reject AWS credentials while allowing evaluator-visible, non-secret resource identifiers
+- Local regression tests plus AWS-backed assignment validation
 
 ## Repository layout
 
 ```text
 .
-|-- agentcore/                  # Sanitized AgentCore templates and CDK source
+|-- agentcore/                  # AgentCore templates and CDK source
 |-- diagrams/                  # Architecture diagrams
 |-- docs/                      # Architecture, evidence, rubric, deployment, and CI/CD guides
-|-- evidence/                  # Original AWS captures and sanitized raw test transcripts
+|-- evidence/                  # AWS captures and test transcripts
 |-- infrastructure/            # CloudFormation and deployment helpers
 |-- src/                       # Agents, tools, workflow state, and runtime entrypoint
 |-- tests/                     # Assignment and public-repository validation
 |-- .env.example               # Safe environment-variable template
-|-- .env                       # Populated non-secret evaluator resource identifiers
+|-- .env                       # Populated evaluator resource identifiers
 |-- config.py                  # Shared application configuration
 |-- requirements.txt           # Runtime dependencies
 `-- requirements-dev.txt       # Contributor dependencies
@@ -208,7 +214,7 @@ AWS services can incur charges. Use a sandbox account where possible, follow acc
    aws configure get region
    ```
 
-4. Populate resource identifiers as needed. Never place access keys, secret keys, session tokens, passwords, or federation URLs in repository files.
+4. Populate the resource identifiers for the target AWS environment.
 
 5. Follow [Deployment Guide](docs/DEPLOYMENT.md) to provision the resources, ingest the sample data, create the knowledge bases, deploy the runtime, and validate the application.
 
@@ -252,7 +258,7 @@ See [CI/CD Guide](docs/CI_CD.md) for setup, controls, and the parts of AgentCore
 | Task 4 - AgentCore Memory | Memory deployment and seven-day summary strategy | 15/15 |
 | Task 5 - knowledge bases | `src/bedrock_kb_retrieval.py`, `infrastructure/` | 25/25 |
 | Task 6 - observability | `src/agent_observability.py`, CloudWatch and X-Ray configuration | 20/20 |
-| **Total** | Automated rubric validation recorded October 7, 2026 | **120/120** |
+| **Total** | Automated rubric validation recorded October 8, 2026 | **120/120** |
 
 The [Rubric Matrix](docs/RUBRIC_MATRIX.md) contains the detailed criterion-to-evidence mapping, recommended review sequence, and evaluator checklist.
 
@@ -260,31 +266,18 @@ The [Live Experiment and Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) do
 
 ### Required submission evidence
 
-- [Original 120/120 terminal screenshot](evidence/screenshots/official-tests-120-of-120.png)
-- [Sanitized raw 120/120 transcript](evidence/transcripts/official-all-tasks-sanitized.txt)
-- [Original AgentCore Runtime screenshot](evidence/screenshots/aws-agentcore-runtime.jpg)
-- [Original Knowledge Bases screenshot](evidence/screenshots/aws-knowledge-bases.jpg)
-- [Original AWS X-Ray service-map screenshot](evidence/screenshots/aws-xray-service-map.png)
-- [Task 3 runtime and guardrail transcript](evidence/transcripts/task3-runtime-guardrail-sanitized.txt)
-- [Task 5 three-domain retrieval transcript](evidence/transcripts/task5-kb-retrieval-sanitized.txt)
-- [Task 6 observability transcript](evidence/transcripts/task6-observability-after-traces-sanitized.txt)
-- [Fresh live trace-generation transcript](evidence/transcripts/trace-generation-2026-10-08-original.txt)
-- [Populated non-secret `.env`](.env)
+- [120/120 terminal screenshot](evidence/screenshots/official-tests-120-of-120.png)
+- [120/120 test transcript](evidence/transcripts/official-all-tasks-2026-10-08-original.txt)
+- [AgentCore Runtime screenshot](evidence/screenshots/aws-agentcore-runtime.jpg)
+- [Knowledge Bases screenshot](evidence/screenshots/aws-knowledge-bases.jpg)
+- [AWS X-Ray Trace Map](evidence/screenshots/aws-xray-service-map.png)
+- [AWS X-Ray List view with full node names and zero faults](evidence/screenshots/aws-xray-service-list.png)
+- [Task 3 runtime and guardrail output](evidence/transcripts/task3-runtime-guardrail-sanitized.txt)
+- [Task 5 three-domain retrieval output](evidence/transcripts/task5-kb-retrieval-sanitized.txt)
+- [Task 6 observability output](evidence/transcripts/task6-observability-after-traces-sanitized.txt)
+- [Final trace-generation transcript](evidence/transcripts/trace-generation-2026-10-08-original.txt)
+- [Populated `.env`](.env)
 - [Detailed evidence report](docs/EVIDENCE_REPORT.md)
-
-## Security and privacy
-
-- This repository contains the Udacity account number and non-secret deployed resource IDs required for evaluation.
-- The populated `.env` contains no authentication material; the example remains available for redeployment.
-- `.gitignore` excludes credentials, generated CDK output, runtime bundles, and response payloads.
-- Repository safety tests reject common AWS access-key, secret-key, and session-token patterns.
-- Use short-lived AWS credentials and least-privilege roles; do not place secrets in source code.
-- Observability uses process-local keyed pseudonyms for customer/session identifiers, omits request text by default, and never logs tool argument values. Keep `AGENT_OBSERVABILITY_INCLUDE_SENSITIVE=false` outside controlled debugging.
-- The optional AgentCore Gateway uses AWS IAM authorization and a tagged, dedicated role restricted to the configured Lambda ARNs. Reuse fails closed if an existing gateway or role does not match those controls.
-
-This is an educational system with synthetic customers. The runtime request contract accepts `customer_id` and `session_id` from an IAM-authorized caller; a production multi-tenant service must derive customer identity from authenticated claims and enforce ownership outside the language model before enabling order reads or refund mutations.
-
-If you discover a security issue, follow [SECURITY.md](SECURITY.md) rather than opening a public issue.
 
 ## Known limitation
 

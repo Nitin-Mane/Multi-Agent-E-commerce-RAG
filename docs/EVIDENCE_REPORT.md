@@ -2,7 +2,7 @@
 
 ## Reviewer summary
 
-This report is the single evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. It links original AWS console captures, an original terminal capture, and raw command output without recreating terminal or console screenshots. The 120/120 image below was captured directly from a successful `python tests/test_agent.py all` run.
+This report is the evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. It connects the implementation to the terminal results and AWS Console views used for evaluation.
 
 ## Environment verified
 
@@ -18,8 +18,6 @@ This report is the single evidence index for the Udacity **Multi-Agent E-commerc
 | Shipping KB | `BTHTUIKUYI` |
 | Warranty KB | `JHJBT4FYVM` |
 | Official rubric result | `120/120` |
-
-These account and resource identifiers are intentionally visible for course evaluation. They are not authentication secrets. The repository does **not** contain an AWS access key, secret access key, session token, password, federation URL, or browser sign-in token.
 
 ## Fresh end-to-end experiment
 
@@ -39,35 +37,37 @@ python src/agent_orchestrator.py test
 |---|---|---|
 | Return request for `ORD-27176` | Orchestrator -> Inventory -> Policy -> three parallel KB retrievers -> Refund -> Communication | Completed |
 | Premium return-policy question | Orchestrator -> Policy -> three parallel KB retrievers -> Communication | Completed |
-| Five items at $29.99 with 10% discount | Orchestrator arithmetic -> Communication | Completed; `$134.95` |
+| Five items at $29.99 with 10% discount | Orchestrator arithmetic -> Communication | Completed; `$134.96` |
 
-The fresh runner reported successful publication of these X-Ray trace IDs:
+The final runner published these X-Ray trace IDs:
 
-- `1-6ac7ae3c-fa6b9bf5599f38d19aa67461`
-- `1-6ac7ae9d-7e4d7cf4cd1ace20c58080b7`
-- `1-6ac7aed7-099404bf4cca8ff9455cc9c8`
+- `1-6ac7c791-7c49890d0c6e70eeb1ebee05`
+- `1-6ac7c7f2-7582997b85d6ab173fcfcfc1`
+- `1-6ac7c822-35f5d059f1cfe78eb61f6f34`
 
 After the run, CloudWatch X-Ray was refreshed with the **5 minute** range in `us-east-1`. The live map showed `NovaMart-Orchestrator` connected to `InventoryAgent`, `PolicyAgent`, `RefundAgent`, `CommunicationAgent`, `KnowledgeBase-returns`, `KnowledgeBase-shipping`, and `KnowledgeBase-warranty`.
 
-## Required X-Ray Service Map evidence
+## X-Ray evidence
 
-![Original AWS X-Ray Service Map showing NovaMart-Orchestrator, worker agents, and three Knowledge Base nodes](../evidence/screenshots/aws-xray-service-map.png)
+The [Trace Map screenshot](../evidence/screenshots/aws-xray-service-map.png) is displayed in the project README so the deployed call graph is visible on the repository landing page. AWS shortens long labels on the map; the List view below records every complete node name and its fault rate.
+
+![AWS X-Ray List view showing eight complete node names, zero faults, and no alarms](../evidence/screenshots/aws-xray-service-list.png)
 
 ### What the reviewer should verify
 
-1. The AWS console is on the X-Ray/CloudWatch Trace Map in `us-east-1`.
-2. `NovaMart-Orchestrator` is the central service node.
-3. Worker nodes include `InventoryAgent`, `PolicyAgent`, `RefundAgent`, and `CommunicationAgent`.
-4. Policy retrieval includes the returns, shipping, and warranty Knowledge Base nodes.
-5. Directed edges form the required orchestrator -> worker -> Knowledge Base call chain.
+1. The Trace Map is set to the five-minute window in `us-east-1` and shows `NovaMart-Orchestrator` as the central node.
+2. The map connects the orchestrator to `InventoryAgent`, `PolicyAgent`, `RefundAgent`, and `CommunicationAgent`.
+3. The map also records returns, shipping, and warranty Knowledge Base dependencies as direct X-Ray service edges from the orchestrator.
+4. The List view identifies all eight services without truncated labels.
+5. Every listed service reports `0.00/min` under **Faults (5xx)**, and **Current alarms** is `0`.
 
-This is an original AWS Console capture, not a Mermaid diagram or a reconstructed graphic. The live map was regenerated and visually rechecked after the fresh experiment above.
+Both views were captured from the AWS Console after the final scenario run and trace-ingestion wait.
 
 ## Official test evidence
 
 ![Original PowerShell terminal capture showing the official command, exit code 0, and 120 out of 120 points](../evidence/screenshots/official-tests-120-of-120.png)
 
-The complete output from the fresh command is preserved as [`official-all-tasks-2026-10-08-original.txt`](../evidence/transcripts/official-all-tasks-2026-10-08-original.txt). The earlier sanitized record remains available as [`official-all-tasks-sanitized.txt`](../evidence/transcripts/official-all-tasks-sanitized.txt). Both end with `120/120 pts (100%)`. No recreated terminal rendering is included.
+The complete output is preserved as [`official-all-tasks-2026-10-08-original.txt`](../evidence/transcripts/official-all-tasks-2026-10-08-original.txt) and ends with `120/120 pts (100%)`.
 
 | Task | Rubric area | Recorded score |
 |---|---|---:|
@@ -80,13 +80,12 @@ The complete output from the fresh command is preserved as [`official-all-tasks-
 
 ### Runtime and Knowledge Base console evidence
 
-- [Original AgentCore Runtime console capture](../evidence/screenshots/aws-agentcore-runtime.jpg)
-- [Original three-Knowledge-Base console capture](../evidence/screenshots/aws-knowledge-bases.jpg)
+- [AgentCore Runtime console capture](../evidence/screenshots/aws-agentcore-runtime.jpg)
+- [Three-Knowledge-Base console capture](../evidence/screenshots/aws-knowledge-bases.jpg)
 - [Sanitized Task 3 runtime and guardrail output](../evidence/transcripts/task3-runtime-guardrail-sanitized.txt)
 - [Sanitized Task 5 retrieval output with non-empty returns, shipping, and warranty passages](../evidence/transcripts/task5-kb-retrieval-sanitized.txt)
 - [Sanitized Task 6 output recorded after traces arrived](../evidence/transcripts/task6-observability-after-traces-sanitized.txt)
-- [Sanitized live trace-generation output](../evidence/transcripts/trace-generation-mixed-model-sanitized.txt)
-- [Fresh original trace-generation output](../evidence/transcripts/trace-generation-2026-10-08-original.txt)
+- [Final trace-generation output](../evidence/transcripts/trace-generation-2026-10-08-original.txt)
 
 ## Architecture cross-reference
 
@@ -104,23 +103,3 @@ The [Architecture document](ARCHITECTURE.md#request-flow) owns the request-flow 
 | Seven-day session summaries | `configure_memory()` | Official Task 4 checks |
 | Three synchronized KBs | `infrastructure/create_knowledge_bases.py`, `.env`, KB screenshot, and Task 5 transcript | Official Task 5 checks and live retrieval |
 | Distributed tracing | `src/agent_observability.py` | Official Task 6, fresh trace IDs, X-Ray screenshot |
-| No published AWS credentials | repository safety test | `python -m unittest tests.test_public_repository -v` |
-
-## Security boundary
-
-Included for evaluation:
-
-- Udacity AWS account number
-- Guardrail, Knowledge Base, runtime, request, and trace identifiers
-- original AgentCore Runtime, Knowledge Base, and AWS X-Ray console screenshots
-- original terminal screenshot from `python tests/test_agent.py all`
-- sanitized raw official-test and live-experiment transcripts
-- populated non-secret `.env`
-
-Never included:
-
-- AWS access keys
-- AWS secret access keys
-- AWS session tokens
-- passwords, OTPs, or federation/sign-in URLs
-- personal-account credentials

@@ -41,6 +41,7 @@ REQUIRED_FILES = {
     "evidence/screenshots/aws-agentcore-runtime.jpg",
     "evidence/screenshots/aws-knowledge-bases.jpg",
     "evidence/screenshots/aws-xray-service-map.png",
+    "evidence/screenshots/aws-xray-service-list.png",
     "evidence/screenshots/official-tests-120-of-120.png",
 }
 
@@ -117,7 +118,6 @@ class PublicRepositoryTests(unittest.TestCase):
             "## Quick start",
             "## Testing",
             "## Rubric coverage",
-            "## Security and privacy",
             "## Known limitation",
         }
         missing = sorted(heading for heading in required_headings if heading not in readme)
