@@ -10,25 +10,11 @@
 [![Security](https://img.shields.io/badge/security-no_committed_credentials-1F883D)](SECURITY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+![NovaMart multi-agent customer-support architecture](diagrams/architecture-overview.png)
+
 This repository contains my Udacity AWS assignment implementation of a multi-agent retrieval-augmented generation (RAG) assistant for an e-commerce customer-support use case. A supervisor coordinates inventory, refund, policy, and communication specialists. The solution uses Amazon Bedrock, Amazon Bedrock Knowledge Bases with S3 Vectors, DynamoDB, S3, Bedrock AgentCore Runtime, AgentCore Memory, CloudWatch, and AWS X-Ray.
 
 The credential-free Task 2 validation passes **40/40** locally. AWS-backed results depend on the evaluator's deployed resources and are documented with sanitized raw output in the private course submission; cloud identifiers, credentials, generated deployment artifacts, and private evidence are intentionally excluded from this public repository.
-
-```mermaid
-flowchart TD
-    Client[Customer request] --> Runtime[Amazon Bedrock AgentCore Runtime]
-    Runtime --> Orchestrator[OrchestratorAgent<br/>Claude Haiku 4.5]
-    Orchestrator --> Inventory[InventoryAgent<br/>Claude Sonnet 4.5]
-    Orchestrator --> Refund[RefundAgent<br/>Claude Sonnet 4.5]
-    Orchestrator --> Policy[PolicyAgent<br/>Claude Sonnet 4.5]
-    Orchestrator --> Communication[CommunicationAgent<br/>Claude Sonnet 4.5]
-    Policy --> Returns[Returns KB]
-    Policy --> Shipping[Shipping KB]
-    Policy --> Warranty[Warranty KB]
-    Orchestrator <--> State[(DynamoDB Workflow State)]
-    Runtime <--> Memory[AgentCore Memory]
-    Runtime --> Observability[CloudWatch Logs and AWS X-Ray]
-```
 
 ## Architecture
 
@@ -55,7 +41,7 @@ Every request begins with `initialize_session`. Account and customer-tier questi
 
 `WorkflowStateTable` is keyed by `session_id` and stores `customer_id`, version, timestamps/TTL, and each agent result. Updates use an `expected_version` condition and retry on conflicts, preventing concurrent workers from silently overwriting newer state.
 
-See [System Architecture](docs/SYSTEM_ARCHITECTURE.md) for the full Agent Graph, Request Flow, Shared WorkflowState diagrams, and role/tool matrix.
+See [System Architecture](docs/SYSTEM_ARCHITECTURE.md) for the color-coded deployment topology, Agent Graph, Request Flow, Shared WorkflowState diagrams, and role/tool matrix. The cover is a presentation view; `config.py` is authoritative for the submitted Claude Haiku 4.5 and Claude Sonnet 4.5 defaults.
 
 ## Project highlights
 
