@@ -49,14 +49,23 @@ sequenceDiagram
 
     Customer->>O: Request with session and customer context
     O->>W: initialize_session()
-    alt Order status / return / refund
+    alt Account details / customer tier
+        O->>I: route_to_inventory_agent()
+        I-->>O: Verified customer facts (never PolicyAgent)
+        O->>W: Store inventory_agent result
+    else Order status / history
         O->>I: route_to_inventory_agent()
         I-->>O: Verified order and customer facts
         O->>W: Store inventory_agent result
         O->>R: route_to_refund_agent()
         R->>W: Read inventory context
-        R-->>O: Eligibility decision / return reference
+        R-->>O: Status or eligibility evaluation only
         O->>W: Store refund_agent result
+    else Explicit return / refund request
+        O->>I: route_to_inventory_agent()
+        O->>P: route_to_policy_agent()
+        O->>R: route_to_refund_agent()
+        R-->>O: Decision; initiate only when explicitly requested
     else Policy question
         O->>P: route_to_policy_agent()
         par Parallel RAG
@@ -77,7 +86,18 @@ sequenceDiagram
     O-->>Customer: Return composed response
 ```
 
-Routing rules intentionally keep the orchestrator focused on coordination. It does not replace CommunicationAgent as the final customer-facing writer.
+Routing rules intentionally keep the orchestrator focused on coordination. Sending an order-status request to RefundAgent means evaluating status or eligibility; it does not authorize a refund unless the customer explicitly requests one. The orchestrator does not replace CommunicationAgent as the final customer-facing writer.
+
+| Request type | Required route before final communication |
+|---|---|
+| Account details or customer tier | Inventory only; never Policy |
+| Order status or history | Inventory, then Refund for evaluation only |
+| Policy only | Policy |
+| Explicit return or refund | Inventory, then Policy, then Refund |
+| Mixed order and policy | Inventory, then Policy |
+| Arithmetic | Orchestrator calculation; no Inventory, Policy, or Refund |
+
+Every row ends with CommunicationAgent.
 
 ## Shared WorkflowState
 

@@ -642,10 +642,13 @@ def build_orchestrator_agent(
     # For arithmetic, skip Inventory, Policy and Refund, but still call
     # CommunicationAgent last. Round currency only after the full calculation.
     system_prompt = """You are NovaMart's Orchestrator Agent. Extract the session
-ID and customer ID from the request, preserve the original request, and follow
-these routing rules exactly:
-1. Call initialize_session first for every request.
-2. For order status or order history, call Inventory, then Communication.
+ID and customer ID from the request, preserve the original request, and always
+call initialize_session first. Then follow these six routing rules exactly:
+1. For account details or customer-tier questions, call Inventory, never Policy,
+   then Communication.
+2. For order status or order history, call Inventory, then Refund, then
+   Communication. Refund evaluates status or eligibility only; do not initiate a
+   refund unless the customer explicitly requests one.
 3. For policy-only questions, call Policy, then Communication.
 4. For returns or refunds, call Inventory, then Policy, then Refund, then Communication.
 5. For mixed order and policy questions, call Inventory, then Policy, then Communication.

@@ -12,7 +12,7 @@
 
 This repository contains my Udacity AWS assignment implementation of a multi-agent retrieval-augmented generation (RAG) assistant for an e-commerce customer-support use case. A supervisor coordinates inventory, refund, policy, and communication specialists. The solution uses Amazon Bedrock, Amazon Bedrock Knowledge Bases with S3 Vectors, DynamoDB, S3, Bedrock AgentCore Runtime, AgentCore Memory, CloudWatch, and AWS X-Ray.
 
-The submitted implementation earned **120/120 in the course's automated rubric validation on October 7, 2026**. That result covers the implementation and provisioned AWS resources used for the assignment. Cloud identifiers, credentials, generated deployment artifacts, and private test evidence are intentionally excluded from this public repository.
+The credential-free Task 2 validation passes **40/40** locally. AWS-backed results depend on the evaluator's deployed resources and are documented with sanitized raw output in the private course submission; cloud identifiers, credentials, generated deployment artifacts, and private evidence are intentionally excluded from this public repository.
 
 ```mermaid
 flowchart TD
@@ -49,7 +49,7 @@ The graph follows the Udacity-specified Orchestrator → Workers pattern. The Ha
 
 ### Request Flow
 
-Every request begins with `initialize_session`. Order/refund requests flow through InventoryAgent and RefundAgent; policy questions flow through PolicyAgent; the CommunicationAgent is always the final worker. Results are written to shared state between steps instead of being passed only through prompts.
+Every request begins with `initialize_session`. Account and customer-tier questions use InventoryAgent and never PolicyAgent. Order-status questions use InventoryAgent followed by RefundAgent for status or eligibility evaluation only; a refund is initiated only when the customer explicitly asks for one. Policy-only questions use PolicyAgent, and CommunicationAgent is always the final worker. Results are written to shared state between steps instead of being passed only through prompts.
 
 ### Shared WorkflowState
 

@@ -23,11 +23,12 @@ AgentCore Runtime -> Orchestrator
 
 1. AgentCore passes a structured request to `run_serve()` in `src/agent_orchestrator.py`.
 2. The HTTP entrypoint validates the request and initializes the orchestrator.
-3. The orchestrator classifies the intent and records workflow progress.
-4. Relevant specialists retrieve domain context and produce focused results.
-5. Independent work can execute concurrently when a request spans domains.
-6. The orchestrator combines the specialist outputs into the final answer.
-7. The workflow record is finalized for traceability and recovery.
+3. The orchestrator classifies the intent using the six explicit routing rules and records workflow progress.
+4. Account/tier requests use InventoryAgent without PolicyAgent. Order-status requests use InventoryAgent and RefundAgent for evaluation only; refund initiation requires an explicit customer request.
+5. Relevant specialists retrieve domain context and produce focused results.
+6. Independent work can execute concurrently when a request spans domains.
+7. CommunicationAgent composes the final customer-facing answer for every route.
+8. The workflow record is finalized for traceability and recovery.
 
 ## State consistency
 

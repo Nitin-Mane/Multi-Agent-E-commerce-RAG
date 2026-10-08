@@ -49,6 +49,9 @@ jobs:
       - name: Validate secure defaults
         run: python -m unittest tests.test_security_defaults -v
 
+      - name: Validate rubric routing contract
+        run: python -m unittest tests.test_routing_contract -v
+
       - name: Run credential-free assignment tests
         run: python tests/run_task2_ci.py
 

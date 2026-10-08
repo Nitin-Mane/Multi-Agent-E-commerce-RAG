@@ -32,22 +32,21 @@ After completing `docs/DEPLOYMENT.md` and populating the ignored local configura
 python tests\test_agent.py all
 ```
 
-The assignment validation result recorded on October 7, 2026 was:
+The current credential-free validation result is:
 
 | Task | Area | Result |
 |---|---|---:|
 | 2 | Agent and tool implementation | 40/40 |
-| 3 | AgentCore deployment and guardrails | 20/20 |
-| 4 | AgentCore Memory | 15/15 |
-| 5 | Bedrock Knowledge Bases and retrieval | 25/25 |
-| 6 | CloudWatch and X-Ray observability | 20/20 |
-| **Total** | | **120/120** |
+| 3 | AgentCore deployment and guardrails | Validate from private sanitized raw output |
+| 4 | AgentCore Memory | Validate from private sanitized raw output |
+| 5 | Bedrock Knowledge Bases and retrieval | Validate from private sanitized raw output |
+| 6 | CloudWatch and X-Ray observability | Validate from the private AWS console capture |
 
 ## Evidence scope
 
 The public repository intentionally excludes account-specific console captures and identifiers. Screenshots supplied to a course evaluator should be reviewed in the private submission package, where they can be handled according to course policy. Public code, sanitized diagrams, source-level tests, and rubric mappings are retained here.
 
-The 120/120 result means the automated rubric criteria passed against the assignment environment. It is not presented as proof of an unrestricted production deployment. The final requested Claude Haiku 4.5 invocation was blocked in the Udacity account by an AWS Marketplace entitlement requirement; the limitation is disclosed in the README.
+AWS-backed claims are intentionally made only when supported by the raw, sanitized output and console captures packaged for the evaluator. Public documentation does not substitute diagrams for live AWS evidence.
 
 ## Review checklist
 
@@ -55,6 +54,8 @@ The 120/120 result means the automated rubric criteria passed against the assign
 - Confirm retrieval results retain source metadata for grounded responses.
 - Confirm workflow state is recorded in DynamoDB and session summaries use AgentCore Memory.
 - Confirm orchestration can combine independent specialist calls.
+- Confirm account/tier requests use InventoryAgent and never PolicyAgent.
+- Confirm order status routes InventoryAgent -> RefundAgent -> CommunicationAgent without initiating an unrequested refund.
 - Confirm the AgentCore HTTP entrypoint accepts a structured request.
 - Confirm secrets and account-specific files are absent.
 - Confirm cleanup instructions identify the chargeable AWS resources.
