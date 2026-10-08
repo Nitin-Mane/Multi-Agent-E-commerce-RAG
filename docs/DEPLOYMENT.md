@@ -23,6 +23,12 @@ Copy-Item agentcore\aws-targets.example.json agentcore\aws-targets.json
 
 Populate the local copies as resources are created. These files are intentionally ignored by Git.
 
+The rubric defaults are Claude Haiku 4.5 for orchestration and Claude Sonnet
+4.5 for workers. If a classroom account blocks Marketplace-backed models, an
+evidence run may temporarily set `ORCHESTRATOR_MODEL_ID` and `WORKER_MODEL_ID`
+to an account-accessible Bedrock model such as `amazon.nova-lite-v1:0`. Leave
+both variables unset for the submitted default configuration.
+
 ## 3. Provision the data plane
 
 Review the templates and parameters in `infrastructure/`. Deploy the S3 data bucket, S3 Vector indexes, DynamoDB tables, IAM role, log group, and Bedrock Knowledge Base prerequisites using the supplied template and helpers.

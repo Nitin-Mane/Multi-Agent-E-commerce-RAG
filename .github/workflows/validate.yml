@@ -52,6 +52,9 @@ jobs:
       - name: Validate rubric routing contract
         run: python -m unittest tests.test_routing_contract -v
 
+      - name: Validate model defaults and lab override
+        run: python -m unittest tests.test_model_configuration -v
+
       - name: Run credential-free assignment tests
         run: python tests/run_task2_ci.py
 
