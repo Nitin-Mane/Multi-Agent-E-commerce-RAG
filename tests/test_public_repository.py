@@ -10,6 +10,7 @@ import re
 import subprocess
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,13 +57,20 @@ SENSITIVE_PATTERNS = {
 
 
 def tracked_paths():
-    """Return Git-tracked paths so local caches cannot create false failures."""
-    result = subprocess.run(
-        ["git", "ls-files", "-z"],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-    )
+    """Return repository files from a clone or an extracted submission archive."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        for path in sorted(ROOT.rglob("*")):
+            if path.is_file() and ".git" not in path.relative_to(ROOT).parts:
+                yield path
+        return
+
     for raw_path in result.stdout.split(b"\0"):
         if raw_path:
             yield ROOT / raw_path.decode("utf-8")
@@ -80,6 +88,15 @@ def repository_text_files():
 
 
 class PublicRepositoryTests(unittest.TestCase):
+    def test_archive_validation_falls_back_without_git_metadata(self):
+        failure = subprocess.CalledProcessError(128, ["git", "ls-files", "-z"])
+
+        with patch.object(subprocess, "run", side_effect=failure):
+            paths = set(tracked_paths())
+
+        self.assertIn(ROOT / "README.md", paths)
+        self.assertNotIn(ROOT / ".git", paths)
+
     def test_required_public_repository_files_exist(self):
         missing = sorted(path for path in REQUIRED_FILES if not (ROOT / path).is_file())
         self.assertFalse(missing, f"Missing public-repository files: {missing}")
