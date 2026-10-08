@@ -163,7 +163,7 @@ AgentCore Memory is complementary rather than duplicated storage: DynamoDB holds
 
 ## Verification evidence
 
-The original AWS console capture and the **120/120** result summary are maintained once in the [Evidence Report](EVIDENCE_REPORT.md). Keeping execution evidence separate from design diagrams makes the distinction between intended architecture and observed AWS behavior explicit.
+Original AWS console captures and sanitized raw validation transcripts are indexed once in the [Evidence Report](EVIDENCE_REPORT.md). Keeping execution evidence separate from design diagrams makes the distinction between intended architecture and observed AWS behavior explicit.
 
 ## Safety and operations
 

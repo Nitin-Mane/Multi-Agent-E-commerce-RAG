@@ -1,0 +1,20 @@
+AWS_ACCOUNT=<REDACTED>
+AWS_REGION=us-east-1
+AGENTCORE_RUNTIME_ARN=arn:aws:bedrock-agentcore:us-east-1:<ACCOUNT_ID>:runtime/<REDACTED_RUNTIME_ID>
+GUARDRAIL_ID=<REDACTED_GUARDRAIL_ID>
+GUARDRAIL_VERSION=1
+--- OFFICIAL TASK 3 OUTPUT ---
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 3 - AgentCore Deployment + Guardrails[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] Guardrail 'udacity-agentcore-guardrail' exists in Bedrock
+  [92m✓ PASS[0m [+5pts] Guardrail content, PII, topic and word policies match the specification
+  [92m✓ PASS[0m [+3pts] Guardrail version 1 is published and READY
+  [92m✓ PASS[0m [+7pts] AgentCore Runtime is READY (PUBLIC / HTTP) with guardrail + KB environment variables
+
+═══════════════════════════════════════════════════════
+  [1mScore: [92m20/20 pts (100%)[0m
+═══════════════════════════════════════════════════════
+
+  [92m[1m🎉 Perfect score! All tasks complete.[0m

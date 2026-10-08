@@ -1,0 +1,14 @@
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 6 - Observability[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+10pts] CloudWatch logging enabled at INFO level → /aws/bedrock/agentcore/udacity-agentcore
+  [96mℹ INFO[0m latest agent log stream: local/ip-10-143-103-0.us-east-1.compute.internal/2026-10-08/4b18252f (8 min ago)
+  [92m✓ PASS[0m [+10pts] X-Ray tracing enabled: 100% sampling, Transaction Search → CloudWatch Logs (ACTIVE)
+  [96mℹ INFO[0m 7 NovaMart trace(s) received by X-Ray in the last 6 hours - open CloudWatch → X-Ray traces → Service map for the screenshot
+
+═══════════════════════════════════════════════════════
+  [1mScore: [92m20/20 pts (100%)[0m
+═══════════════════════════════════════════════════════
+
+  [92m[1m🎉 Perfect score! All tasks complete.[0m

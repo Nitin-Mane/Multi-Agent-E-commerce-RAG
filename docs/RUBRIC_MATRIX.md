@@ -22,14 +22,15 @@ The matrix maps each assignment area to inspectable code and validation. Point t
 - `tests/test_agent.py task2` is credential-free and repeatable from a local clone.
 - Tasks 3-6 are integration checks and need provisioned AWS resources plus local ignored identifiers.
 - Public-repository checks verify that required evaluator documentation exists and common sensitive-data patterns are absent.
-- The course repository includes the original account-specific X-Ray screenshot, the rendered 120/120 summary, and its retained result record; authentication credentials remain excluded.
+- The course repository includes original account-specific AWS screenshots and sanitized raw Task 3, Task 5, Task 6, and 120/120 transcripts; authentication credentials remain excluded.
+- A graphical score summary is not accepted as terminal evidence. The required score image must be captured directly from a successful `python tests/test_agent.py all` run.
 
 ## Recommended evaluator sequence
 
 1. Read the root [README](../README.md) for scope, setup, and the disclosed model-entitlement limitation.
 2. Review [Architecture](ARCHITECTURE.md) for the AWS topology, Agent Graph, Request Flow, Shared `WorkflowState`, and role/tool boundaries.
 3. Inspect `src/agent_orchestrator.py` for completed orchestration, worker, state, retrieval, deployment, and tracing logic.
-4. Review the recorded **120/120** result summary and original AWS X-Ray Service Map in the [Evidence Report](EVIDENCE_REPORT.md).
+4. Review the raw **120/120** transcript and original AWS console captures in the [Evidence Report](EVIDENCE_REPORT.md).
 5. Inspect the populated [`.env`](../.env) and confirm that resource IDs are present while credential variables are absent.
 6. Run the credential-free validation commands below.
 
@@ -56,6 +57,7 @@ python tests\test_agent.py all
 - Confirm CommunicationAgent is the final worker for every route.
 - Confirm the AgentCore HTTP entrypoint accepts a structured request.
 - Confirm `.env` contains required non-secret resource IDs and no AWS credential values.
+- Confirm the 120/120 image is an original terminal capture from the official command, not a recreated rendering.
 - Confirm the X-Ray image shows `NovaMart-Orchestrator` connected to workers and Knowledge Base nodes.
 - Confirm cleanup guidance identifies the chargeable AWS resources.
 

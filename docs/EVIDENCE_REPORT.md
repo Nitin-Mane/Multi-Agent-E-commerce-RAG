@@ -2,7 +2,7 @@
 
 ## Reviewer summary
 
-This report is the evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. The previous review failed because the GitHub archive did not contain the required AWS X-Ray Service Map image. The repository now includes that original console capture, a clearly labeled rendering of the recorded 120/120 result, the retained result record, the populated non-secret `.env`, source code, and a direct mapping from every artifact to the rubric.
+This report is the single evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. It links original AWS console captures, an original terminal capture, and raw command output without recreating terminal or console screenshots. The 120/120 image below was captured directly from a successful `python tests/test_agent.py all` run.
 
 ## Environment verified
 
@@ -39,19 +39,19 @@ python src/agent_orchestrator.py test
 |---|---|---|
 | Return request for `ORD-27176` | Orchestrator -> Inventory -> Policy -> three parallel KB retrievers -> Refund -> Communication | Completed |
 | Premium return-policy question | Orchestrator -> Policy -> three parallel KB retrievers -> Communication | Completed |
-| Five items at $29.99 with 10% discount | Orchestrator arithmetic -> Communication | Completed; `$134.96` |
+| Five items at $29.99 with 10% discount | Orchestrator arithmetic -> Communication | Completed; `$134.95` |
 
-The runner reported successful publication of these X-Ray trace IDs:
+The fresh runner reported successful publication of these X-Ray trace IDs:
 
-- `1-6ac75d38-9e9437bed32ffb5c2492dd5c`
-- `1-6ac75d93-e77bb0d0f86d464a040337f8`
-- `1-6ac75dc9-345ba4b7c64e92f4928d5bbf`
+- `1-6ac7ae3c-fa6b9bf5599f38d19aa67461`
+- `1-6ac7ae9d-7e4d7cf4cd1ace20c58080b7`
+- `1-6ac7aed7-099404bf4cca8ff9455cc9c8`
 
 After the run, CloudWatch X-Ray was refreshed with the **5 minute** range in `us-east-1`. The live map showed `NovaMart-Orchestrator` connected to `InventoryAgent`, `PolicyAgent`, `RefundAgent`, `CommunicationAgent`, `KnowledgeBase-returns`, `KnowledgeBase-shipping`, and `KnowledgeBase-warranty`.
 
 ## Required X-Ray Service Map evidence
 
-![Original AWS X-Ray Service Map showing NovaMart-Orchestrator, worker agents, and three Knowledge Base nodes](../diagrams/aws-xray-service-map-original.jpg)
+![Original AWS X-Ray Service Map showing NovaMart-Orchestrator, worker agents, and three Knowledge Base nodes](../evidence/screenshots/aws-xray-service-map.png)
 
 ### What the reviewer should verify
 
@@ -63,9 +63,11 @@ After the run, CloudWatch X-Ray was refreshed with the **5 minute** range in `us
 
 This is an original AWS Console capture, not a Mermaid diagram or a reconstructed graphic. The live map was regenerated and visually rechecked after the fresh experiment above.
 
-## Recorded official test result
+## Official test evidence
 
-![Rendered summary of the recorded official assignment test result showing 120 out of 120](../diagrams/official-tests-120-of-120-summary.png)
+![Original PowerShell terminal capture showing the official command, exit code 0, and 120 out of 120 points](../evidence/screenshots/official-tests-120-of-120.png)
+
+The complete output from the fresh command is preserved as [`official-all-tasks-2026-10-08-original.txt`](../evidence/transcripts/official-all-tasks-2026-10-08-original.txt). The earlier sanitized record remains available as [`official-all-tasks-sanitized.txt`](../evidence/transcripts/official-all-tasks-sanitized.txt). Both end with `120/120 pts (100%)`. No recreated terminal rendering is included.
 
 | Task | Rubric area | Recorded score |
 |---|---|---:|
@@ -76,11 +78,19 @@ This is an original AWS Console capture, not a Mermaid diagram or a reconstructe
 | Task 6 | CloudWatch and X-Ray observability | 20/20 |
 | **Total** | **Official rubric verification** | **120/120** |
 
-This is a presentation rendering of the retained result record, not an original terminal screenshot. The source record is available as [`evidence/official_test_results.txt`](../evidence/official_test_results.txt). The rendering intentionally shows the Udacity account number so the evaluator can correlate the result with the deployed sandbox. A sanitized rendering remains available as `diagrams/official-tests-120-of-120-summary-redacted.png` for contexts where the account number is unnecessary.
+### Runtime and Knowledge Base console evidence
+
+- [Original AgentCore Runtime console capture](../evidence/screenshots/aws-agentcore-runtime.jpg)
+- [Original three-Knowledge-Base console capture](../evidence/screenshots/aws-knowledge-bases.jpg)
+- [Sanitized Task 3 runtime and guardrail output](../evidence/transcripts/task3-runtime-guardrail-sanitized.txt)
+- [Sanitized Task 5 retrieval output with non-empty returns, shipping, and warranty passages](../evidence/transcripts/task5-kb-retrieval-sanitized.txt)
+- [Sanitized Task 6 output recorded after traces arrived](../evidence/transcripts/task6-observability-after-traces-sanitized.txt)
+- [Sanitized live trace-generation output](../evidence/transcripts/trace-generation-mixed-model-sanitized.txt)
+- [Fresh original trace-generation output](../evidence/transcripts/trace-generation-2026-10-08-original.txt)
 
 ## Architecture cross-reference
 
-The [Architecture document](ARCHITECTURE.md#request-flow) owns the request-flow figure, Mermaid diagrams, role/tool matrix, and Shared `WorkflowState` explanation. This evidence report keeps observed execution evidence together: the original X-Ray console capture, the rendered score summary, and its retained result record.
+The [Architecture document](ARCHITECTURE.md#request-flow) owns the request-flow figure, Mermaid diagrams, role/tool matrix, and Shared `WorkflowState` explanation. This report is the only documentation page that embeds or directly indexes observed execution evidence.
 
 ## Evidence-to-source traceability
 
@@ -90,9 +100,9 @@ The [Architecture document](ARCHITECTURE.md#request-flow) owns the request-flow 
 | Five-agent graph and tool counts | Agent builders and routing tools | Official Task 2 checks |
 | Deterministic routing contract | Orchestrator prompt and `tests/test_routing_contract.py` | Routing unit tests |
 | Parallel three-KB retrieval | `build_policy_agent()` and `ThreadPoolExecutor` | Official Tasks 2 and 5 plus live output |
-| Guardrail and runtime | deployment helpers and `.env` | Official Task 3 checks |
+| Guardrail and runtime | deployment helpers, `.env`, runtime screenshot, and Task 3 transcript | Official Task 3 checks |
 | Seven-day session summaries | `configure_memory()` | Official Task 4 checks |
-| Three synchronized KBs | `infrastructure/create_knowledge_bases.py` and `.env` | Official Task 5 checks and live retrieval |
+| Three synchronized KBs | `infrastructure/create_knowledge_bases.py`, `.env`, KB screenshot, and Task 5 transcript | Official Task 5 checks and live retrieval |
 | Distributed tracing | `src/agent_observability.py` | Official Task 6, fresh trace IDs, X-Ray screenshot |
 | No published AWS credentials | repository safety test | `python -m unittest tests.test_public_repository -v` |
 
@@ -102,8 +112,9 @@ Included for evaluation:
 
 - Udacity AWS account number
 - Guardrail, Knowledge Base, runtime, request, and trace identifiers
-- original AWS X-Ray console screenshot
-- rendered 120/120 summary and retained result record
+- original AgentCore Runtime, Knowledge Base, and AWS X-Ray console screenshots
+- original terminal screenshot from `python tests/test_agent.py all`
+- sanitized raw official-test and live-experiment transcripts
 - populated non-secret `.env`
 
 Never included:

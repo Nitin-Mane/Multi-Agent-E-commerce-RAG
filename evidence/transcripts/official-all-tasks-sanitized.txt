@@ -1,0 +1,150 @@
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 2 - Multi-Agent Orchestration[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] build_inventory_agent() returns an Agent object
+  [92m✓ PASS[0m [+5pts] InventoryAgent has 3 tools (3 found)
+  [92m✓ PASS[0m [+5pts] build_policy_agent() returns an Agent object
+  [92m✓ PASS[0m [+5pts] PolicyAgent has 1 tool (1 found)
+  [92m✓ PASS[0m [+5pts] build_orchestrator_agent() returns an Agent object
+  [92m✓ PASS[0m [+5pts] OrchestratorAgent has 5 routing tools (5 found)
+  [92m✓ PASS[0m [+5pts] OrchestratorAgent uses config.ORCHESTRATOR_MODEL_ID (Claude Haiku 4.5 - correct for routing)
+  [92m✓ PASS[0m [+5pts] Worker agents use config.WORKER_MODEL_ID (Claude Sonnet 4.5 - correct for reasoning)
+  [92m✓ PASS[0m [+0pts] build_policy_agent() runs the retrievers with ThreadPoolExecutor
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 3 - AgentCore Deployment + Guardrails[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] Guardrail 'udacity-agentcore-guardrail' exists in Bedrock
+  [92m✓ PASS[0m [+5pts] Guardrail content, PII, topic and word policies match the specification
+  [92m✓ PASS[0m [+3pts] Guardrail version 1 is published and READY
+  [92m✓ PASS[0m [+7pts] AgentCore Runtime is READY (PUBLIC / HTTP) with guardrail + KB environment variables
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 4 - Memory[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] AgentCore Memory udacity_agentcore_memory-pfNuvkDSau is ACTIVE
+  [92m✓ PASS[0m [+5pts] Memory uses the SESSION_SUMMARY (summaryMemoryStrategy) strategy
+  [92m✓ PASS[0m [+5pts] Memory eventExpiryDuration is 7 days
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 5 - Bedrock Knowledge Bases[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] RETURNS_KB_ID is set in environment (<REDACTED_RETURNS_KB_ID>)
+  [92m✓ PASS[0m [+0pts] Returns Knowledge Base is ACTIVE
+  [92m✓ PASS[0m [+0pts] Returns KB uses amazon.titan-embed-text-v2:0
+  [92m✓ PASS[0m [+0pts] Returns KB data source has a completed sync
+  [92m✓ PASS[0m [+5pts] SHIPPING_KB_ID is set in environment (<REDACTED_SHIPPING_KB_ID>)
+  [92m✓ PASS[0m [+0pts] Shipping Knowledge Base is ACTIVE
+  [92m✓ PASS[0m [+0pts] Shipping KB uses amazon.titan-embed-text-v2:0
+  [92m✓ PASS[0m [+0pts] Shipping KB data source has a completed sync
+  [92m✓ PASS[0m [+5pts] WARRANTY_KB_ID is set in environment (<REDACTED_WARRANTY_KB_ID>)
+  [92m✓ PASS[0m [+0pts] Warranty Knowledge Base is ACTIVE
+  [92m✓ PASS[0m [+0pts] Warranty KB uses amazon.titan-embed-text-v2:0
+  [92m✓ PASS[0m [+0pts] Warranty KB data source has a completed sync
+  [92m✓ PASS[0m [+5pts] All three Knowledge Bases return passages for a policy question
+    [PARALLEL RETRIEVAL - START]  Spawning 3 sub-agents concurrently via ThreadPoolExecutor
+    ──────────────────────────────────────────────────────
+    +-- [SUB-AGENT 01]  ReturnsRetriever   KB-ID: <REDACTED_RETURNS_KB_ID>
+    +-- [SUB-AGENT 02]  ShippingRetriever  KB-ID: <REDACTED_SHIPPING_KB_ID>
+    +-- [SUB-AGENT 03]  WarrantyRetriever  KB-ID: <REDACTED_WARRANTY_KB_ID>
+    Retrieving in parallel... (sub-agent output suppressed - clean results printed sequentially after [END])
+I'll help you find information about the return window for premium customers and warranty
+Tool #1: retrieve_shipping_policy
+ details.I'll help you find information about the return window for
+Tool #1: retrieve_returns_policy
+ premium customers and warranty duration from NovaMart's warranty policy.
+Tool #1: retrieve_warranty_policy
+Based on the shipping policy documents, here's what I found:
+
+**Premium Customer Return Window:**Based 60 days on the N
+- PremiumovaMart Returns tier Policy, here's customers have what an I found:
+
+## extended 60-day return window ( Return Window for Premium Customerscompared
+** to Premium30 days for Standard customers customers) receive
+
+**Warranty:** 3 years an extended 60-day return windowBased** (compared on the warranty to the on electronics
+- Premium tier policy documents standard 30-day window for, here's what regular customers receive I found:
+
+## a customers).
+
+## Warranty Information Return Window for Premium Customers 3-year warranty on electronics (
+The
+** warranty length60 dependscompared to 1 year for Standard  customers)
+
+**Source on yourdays** -:** N customerovaMart Customer Premium tier:
+- **Premium tier Tier Program document (s customers receive an extended Tier:3://udacity-agentcore 60-day return window ( -policy-docs-028612373compared3-year warranty on481-5bdd8a50 to the electronics**/policies/shipping/customer_t standard 30-day window for
+- **Standard Tier: iers.txt)
+
+Note regular1-year warranty on electronics**: customers).
+
+### Customers qualify
+
+## Warranty Duration
+The How for Premium tier by warranty length to Qualify spending $500+ in a calendar year depends for Premium Tier
+You OR placing 20+ orders in a on the product automatically type become: calendar year. a
+
+- **Electronics: Premium customer when you: 3
+- Spend $500+ in years** for a calendar year, Premium OR
+- Place 20+ orders customers in a calendar year
+
+** (Sourcesautomatically:**
+- s upgraded from3://udacity-agentcore the-policy-docs-028612373 standard 2481-5bdd8a50-year warranty)
+- **All/policies/returns/customer_t other products: 1 year**iers.txt
+- s3:// (udacity-agentcore-policystandard limited-docs-<ACCOUNT_ID>- warranty against5bdd8a50/policies manufacturing defects)
+
+**/returns/return_policy.txtSource:** NovaMart Customer Tier Program and Warranty Policy documents (January 2025)
+
+Note: Premium tier status is achieved by spending $500+ or placing 20+ orders in a calendar year, and includes additional benefits like free expedited shipping and priority customer support.    ──────────────────────────────────────────────────────
+    [PARALLEL RETRIEVAL - END]  All 3 KBs responded  Elapsed: 7.7s
+
+    [SUB-AGENT 01]  ReturnsRetriever   KB: <REDACTED_RETURNS_KB_ID>
+      | Based on the NovaMart Returns Policy, here's what I found:
+      | ## Return Window for Premium Customers
+      | **Premium customers receive an extended 60-day return window** (compared to the standard 30-day window for regular customers).
+      | ## Warranty Information
+      | The warranty length depends on your customer tier:
+      | - **Premium Tier: 3-year warranty on electronics**
+      | - **Standard Tier: 1-year warranty on electronics**
+      | ### How to Qualify for Premium Tier
+      | You automatically become a Premium customer when you:
+      | - Spend $500+ in a calendar year, OR
+      | - Place 20+ orders in a calendar year
+      | **Sources:**
+      | - s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/returns/customer_tiers.txt
+      | - s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/returns/return_policy.txt
+
+    [SUB-AGENT 02]  ShippingRetriever  KB: <REDACTED_SHIPPING_KB_ID>
+      | Based on the shipping policy documents, here's what I found:
+      | **Premium Customer Return Window:** 60 days
+      | - Premium tier customers have an extended 60-day return window (compared to 30 days for Standard customers)
+      | **Warranty:** 3 years on electronics
+      | - Premium tier customers receive a 3-year warranty on electronics (compared to 1 year for Standard customers)
+      | **Source:** NovaMart Customer Tier Program document (s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/customer_tiers.txt)
+      | Note: Customers qualify for Premium tier by spending $500+ in a calendar year OR placing 20+ orders in a calendar year.
+
+    [SUB-AGENT 03]  WarrantyRetriever  KB: <REDACTED_WARRANTY_KB_ID>
+      | Based on the warranty policy documents, here's what I found:
+      | ## Return Window for Premium Customers
+      | **60 days** - Premium tier customers receive an extended 60-day return window (compared to the standard 30-day window for regular customers).
+      | ## Warranty Duration
+      | The warranty length depends on the product type:
+      | - **Electronics: 3 years** for Premium customers (automatically upgraded from the standard 2-year warranty)
+      | - **All other products: 1 year** (standard limited warranty against manufacturing defects)
+      | **Source:** NovaMart Customer Tier Program and Warranty Policy documents (January 2025)
+      | Note: Premium tier status is achieved by spending $500+ or placing 20+ orders in a calendar year, and includes additional benefits like free expedited shipping and priority customer support.
+  [92m✓ PASS[0m [+5pts] search_all_policies() returned combined results from the three retrievers (7.7s)
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 6 - Observability[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+10pts] CloudWatch logging enabled at INFO level → /aws/bedrock/agentcore/udacity-agentcore
+  [96mℹ INFO[0m no agent log events yet - run `python src/agent_orchestrator.py test`
+  [92m✓ PASS[0m [+10pts] X-Ray tracing enabled: 100% sampling, Transaction Search → CloudWatch Logs (ACTIVE)
+  [96mℹ INFO[0m no NovaMart traces in X-Ray yet - run `python src/agent_orchestrator.py test` (or `invoke`) and wait ~60 s
+
+═══════════════════════════════════════════════════════
+  [1mScore: [92m120/120 pts (100%)[0m
+═══════════════════════════════════════════════════════
+
+  [92m[1m🎉 Perfect score! All tasks complete.[0m

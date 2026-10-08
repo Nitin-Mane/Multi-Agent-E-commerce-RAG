@@ -1,0 +1,282 @@
+AWS_REGION=us-east-1
+RETURNS_KB_ID=<REDACTED_RETURNS_KB_ID>
+SHIPPING_KB_ID=<REDACTED_SHIPPING_KB_ID>
+WARRANTY_KB_ID=<REDACTED_WARRANTY_KB_ID>
+--- OFFICIAL TASK 5 OUTPUT ---
+
+[1m[96m───────────────────────────────────────────────────────[0m
+[1m[96m  Task 5 - Bedrock Knowledge Bases[0m
+[1m[96m───────────────────────────────────────────────────────[0m
+  [92m✓ PASS[0m [+5pts] RETURNS_KB_ID is set in environment (<REDACTED_RETURNS_KB_ID>)
+  [92m✓ PASS[0m [+0pts] Returns Knowledge Base is ACTIVE
+  [92m✓ PASS[0m [+0pts] Returns KB uses amazon.titan-embed-text-v2:0
+  [92m✓ PASS[0m [+0pts] Returns KB data source has a completed sync
+  [92m✓ PASS[0m [+5pts] SHIPPING_KB_ID is set in environment (<REDACTED_SHIPPING_KB_ID>)
+  [92m✓ PASS[0m [+0pts] Shipping Knowledge Base is ACTIVE
+  [92m✓ PASS[0m [+0pts] Shipping KB uses amazon.titan-embed-text-v2:0
+  [92m✓ PASS[0m [+0pts] Shipping KB data source has a completed sync
+  [92m✓ PASS[0m [+5pts] WARRANTY_KB_ID is set in environment (<REDACTED_WARRANTY_KB_ID>)
+  [92m✓ PASS[0m [+0pts] Warranty Knowledge Base is ACTIVE
+  [92m✓ PASS[0m [+0pts] Warranty KB uses amazon.titan-embed-text-v2:0
+  [92m✓ PASS[0m [+0pts] Warranty KB data source has a completed sync
+  [92m✓ PASS[0m [+5pts] All three Knowledge Bases return passages for a policy question
+    [PARALLEL RETRIEVAL - START]  Spawning 3 sub-agents concurrently via ThreadPoolExecutor
+    ──────────────────────────────────────────────────────
+    +-- [SUB-AGENT 01]  ReturnsRetriever   KB-ID: <REDACTED_RETURNS_KB_ID>
+    +-- [SUB-AGENT 02]  ShippingRetriever  KB-ID: <REDACTED_SHIPPING_KB_ID>
+    +-- [SUB-AGENT 03]  WarrantyRetriever  KB-ID: <REDACTED_WARRANTY_KB_ID>
+    Retrieving in parallel... (sub-agent output suppressed - clean results printed sequentially after [END])
+I'll help you find information about the return window for
+Tool #1: retrieve_shipping_policy
+ premium customers and warranty duration from NovaMart's warranty policy.I'll help you find information about the return window for
+Tool #1: retrieve_warranty_policy
+ premium customers and warranty details.
+Tool #1: retrieve_returns_policy
+Based on the shipping policy documents, here's what I found:
+
+**Premium Customer Return Window:** 60 days
+- Premium tierBased customers have on the warranty an policy documents extended 60-day return window (, here's whatcompared I found:
+
+## to  Return Window for Premium Customers30 days for Standard customers
+**)
+
+**Warranty:** 3 years60 on electronics
+- Premium  tier customers receivedays** - a Premium 3-year warranty on electronics ( tiercompared to 1 year for Standard customers receive an extended customers)
+
+**Source 60-day return window (compared to the:** NovaMart Customer Tier Program document ( standard 30-day window for regulars3://udacity-agentcore customers).-policy-docs-028612373
+
+## Warranty Duration
+The481-5bdd8a50 warranty length/policies/shipping/customer_t dependsiers.txt)
+
+Note on the product: type Customers qualify:
+
+- **Electronics: for Premium tier by 3 spending $500+ in a calendar year OR placing 20+ orders in a years** for Premium customers calendar year. (Based on the NautomaticallyovaMart Returns upgraded from Policy, here's the what standard 2 I found:
+
+##-year warranty)
+- **All other products: 1 year** ( Return Window for Premium Customers
+**Premiumstandard limited customers warranty against receive manufacturing defects)
+
+** an extended 60-day return windowSource:** N** (compared to theovaMart Customer Tier Program and standard 30-day window for regular Warranty Policy documents ( customers).
+
+## Warranty InformationJanuary
+The 2025)
+
+Note warranty length: Premium tier depends status on your customer is achieved tier:
+- **Premium by spending $500+ or placing 20+ orders in a calendar Tier: year,  and3-year warranty on includes electronics** additional
+- **Standard Tier:  benefits like free expedited shipping and priority1-year warranty on electronics**
+
+**Note:** To qualify for Premium customer support. tier status, customers need to either:
+- Spend $500+ in a calendar year, OR
+- Place 20+ orders in a calendar year
+
+Customers are automatically upgraded when they meet these thresholds.
+
+**Sources:**
+- NovaMart Customer Tier Program (policies/returns/customer_tiers.txt)
+- NovaMart Return Policy (policies/returns/return_policy.txt)    ──────────────────────────────────────────────────────
+    [PARALLEL RETRIEVAL - END]  All 3 KBs responded  Elapsed: 8.5s
+
+    [SUB-AGENT 01]  ReturnsRetriever   KB: <REDACTED_RETURNS_KB_ID>
+      | Based on the NovaMart Returns Policy, here's what I found:
+      | ## Return Window for Premium Customers
+      | **Premium customers receive an extended 60-day return window** (compared to the standard 30-day window for regular customers).
+      | ## Warranty Information
+      | The warranty length depends on your customer tier:
+      | - **Premium Tier: 3-year warranty on electronics**
+      | - **Standard Tier: 1-year warranty on electronics**
+      | **Note:** To qualify for Premium tier status, customers need to either:
+      | - Spend $500+ in a calendar year, OR
+      | - Place 20+ orders in a calendar year
+      | Customers are automatically upgraded when they meet these thresholds.
+      | **Sources:**
+      | - NovaMart Customer Tier Program (policies/returns/customer_tiers.txt)
+      | - NovaMart Return Policy (policies/returns/return_policy.txt)
+
+    [SUB-AGENT 02]  ShippingRetriever  KB: <REDACTED_SHIPPING_KB_ID>
+      | Based on the shipping policy documents, here's what I found:
+      | **Premium Customer Return Window:** 60 days
+      | - Premium tier customers have an extended 60-day return window (compared to 30 days for Standard customers)
+      | **Warranty:** 3 years on electronics
+      | - Premium tier customers receive a 3-year warranty on electronics (compared to 1 year for Standard customers)
+      | **Source:** NovaMart Customer Tier Program document (s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/customer_tiers.txt)
+      | Note: Customers qualify for Premium tier by spending $500+ in a calendar year OR placing 20+ orders in a calendar year.
+
+    [SUB-AGENT 03]  WarrantyRetriever  KB: <REDACTED_WARRANTY_KB_ID>
+      | Based on the warranty policy documents, here's what I found:
+      | ## Return Window for Premium Customers
+      | **60 days** - Premium tier customers receive an extended 60-day return window (compared to the standard 30-day window for regular customers).
+      | ## Warranty Duration
+      | The warranty length depends on the product type:
+      | - **Electronics: 3 years** for Premium customers (automatically upgraded from the standard 2-year warranty)
+      | - **All other products: 1 year** (standard limited warranty against manufacturing defects)
+      | **Source:** NovaMart Customer Tier Program and Warranty Policy documents (January 2025)
+      | Note: Premium tier status is achieved by spending $500+ or placing 20+ orders in a calendar year, and includes additional benefits like free expedited shipping and priority customer support.
+  [92m✓ PASS[0m [+5pts] search_all_policies() returned combined results from the three retrievers (8.5s)
+
+═══════════════════════════════════════════════════════
+  [1mScore: [92m25/25 pts (100%)[0m
+═══════════════════════════════════════════════════════
+
+  [92m[1m🎉 Perfect score! All tasks complete.[0m
+
+--- RAW search_all_policies() OUTPUT ---
+    [PARALLEL RETRIEVAL - START]  Spawning 3 sub-agents concurrently via ThreadPoolExecutor
+    ──────────────────────────────────────────────────────
+    +-- [SUB-AGENT 01]  ReturnsRetriever   KB-ID: <REDACTED_RETURNS_KB_ID>
+    +-- [SUB-AGENT 02]  ShippingRetriever  KB-ID: <REDACTED_SHIPPING_KB_ID>
+    +-- [SUB-AGENT 03]  WarrantyRetriever  KB-ID: <REDACTED_WARRANTY_KB_ID>
+    Retrieving in parallel... (sub-agent output suppressed - clean results printed sequentially after [END])
+I'll help you find information about the return window for premium customers, shipping timingI'll help you find information about the return window for premium customers, shipping timing, and warranty, and warranty coverage from coverage from N NovaMart's shipping policy.ovaMart's return policy.
+Tool #1: retrieve_shipping_policy
+
+Tool #1: retrieve_returns_policy
+I'll help you find information about the return window for premium customers, shipping timing, and warranty coverage from NovaMart's warranty policy.
+Tool #1: retrieve_warranty_policy
+Based on NovaMart's return policy, here's whatBased I on the N found:
+
+##ovaMart shipping policy documents **, here's whatBased I found:
+
+## on the NReturn Window for Premium Customers**
+- **Premium **ovaMart warranty policy documents customersReturn Window for Premium Customers**, here's the information you requested:
+
+##
+- **60: **  60-day return window** (compareddays** -Premium to  Premium30  tier Customer Return Window**
+- **60-day return window** (days for standard customers receivecompared an to  customers)
+- To extended 60-day return window (30  qualify fordays for standard Premium customers)compared tier, customers must spend $500+ to 30 days for standard in a calendar year OR place 20
+
+## **Shipping Timing**
+- **Free customers)+ orders in a calendar year expedited shipping on
+
+## **Shipping Timing**
+
+## **Shipping Timing**
+Premium
+- **Premium customers receive ** customers: Free all orders** for premiumfree expedited shipping on customers ( expedited shipping on all orders** all orders**,standard
+- Standard which takes customers pay customers pay standard ** standard shipping rates ( shipping rates)2-3 business days**.
+
+## **Warranty Coverage**
+
+Forspecific timing
+
+** context not detailed in,For the Premium Customers:**
+- **3 retrieved-year warranty on electronics** (automatic standard shipping upgrade from passages options standard))
+
+## **Warranty Coverage** include
+- **Premium customers: 3:
+- Standard
+
+**General-year warranty on electronics**
+- Warranty Coverage includes Shipping::**
+- Manufacturing defects
+- Standard customers: 1-year warranty on electronics Hardware failures under normal use
+-
+
+### Defective materials5-7 business days
+- Expedited Shipping: 2
+
+**NOT Additional-3 business days Premium Benefits:
+- Priority
+- Overnight Shipping: next Covered:**
+- Damage from accidents customer support with business day
+- Same-Day, misuse, or negligence response
+- Normal wear and tear
+- Water Delivery: available in select metros
+
+** damage (unless product is rated waterpr within 4 hours
+- Early access to sales and new product launchesoof)
+- Unauthorized modifications orOrder
+- Dedicated account manager for orders over Processing**: repairs
+- Cosmetic damage ( $500
+
+**scratches, dents)
+
+** Orders placed before 2:00 SourcesPM EST on business days are processed sameAdditional day;:**
+- s3://ud orders after 2:00 PM ESTacity-agentcore-policy-docs-<ACCOUNT_ID>-5 or on weekends are processed the nextbdd8a50/policies/ business day.
+
+## **Warranty Coverage**
+Premiumreturns/customer_tiers.txt customers receive a
+- s3://udacity- **3-year warranty on electronics**agentcore-policy-docs- (compared to 1-year warranty<ACCOUNT_ID>-5bdd for standard customers)8a50/policies/returns/
+
+---
+
+**Source Informationreturn_policy.txt Information:**
+- Premium tier:**
+- Customer is achieved by Tier spending $500+ in a calendar year OR placing 20+ orders in a Program document calendar year
+- Premium ( customers also receive priority customer support (s3://udacity-agentresponse within 4 hours)
+
+---core-policy-docs-028612
+*373481-5bdd8aSources: customer50/policies/shipping/customer__tiers.txt and warranty_policy.txt (tiers.txt)
+-Last Shipping Policy document (s3://ud Updatedacity-agentcore-policy-: January 2025)*docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/shipping_policy.txt)    ──────────────────────────────────────────────────────
+    [PARALLEL RETRIEVAL - END]  All 3 KBs responded  Elapsed: 8.1s
+
+    [SUB-AGENT 01]  ReturnsRetriever   KB: <REDACTED_RETURNS_KB_ID>
+      | Based on NovaMart's return policy, here's what I found:
+      | ## **Return Window for Premium Customers**
+      | - **Premium customers: 60-day return window** (compared to 30 days for standard customers)
+      | - To qualify for Premium tier, customers must spend $500+ in a calendar year OR place 20+ orders in a calendar year
+      | ## **Shipping Timing**
+      | - **Premium customers: Free expedited shipping on all orders**
+      | - Standard customers pay standard shipping rates (specific timing not detailed in the retrieved passages)
+      | ## **Warranty Coverage**
+      | - **Premium customers: 3-year warranty on electronics**
+      | - Standard customers: 1-year warranty on electronics
+      | ### Additional Premium Benefits:
+      | - Priority customer support with response within 4 hours
+      | - Early access to sales and new product launches
+      | - Dedicated account manager for orders over $500
+      | **Sources:**
+      | - s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/returns/customer_tiers.txt
+      | - s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/returns/return_policy.txt
+
+    [SUB-AGENT 02]  ShippingRetriever  KB: <REDACTED_SHIPPING_KB_ID>
+      | Based on the NovaMart shipping policy documents, here's what I found:
+      | ## **Return Window for Premium Customers**
+      | - **60 days** - Premium tier customers receive an extended 60-day return window (compared to 30 days for standard customers)
+      | ## **Shipping Timing**
+      | Premium customers receive **free expedited shipping on all orders**, which takes **2-3 business days**.
+      | For context, standard shipping options include:
+      | - Standard Shipping: 5-7 business days
+      | - Expedited Shipping: 2-3 business days
+      | - Overnight Shipping: next business day
+      | - Same-Day Delivery: available in select metros
+      | **Order Processing**: Orders placed before 2:00 PM EST on business days are processed same day; orders after 2:00 PM EST or on weekends are processed the next business day.
+      | ## **Warranty Coverage**
+      | Premium customers receive a **3-year warranty on electronics** (compared to 1-year warranty for standard customers)
+      | ---
+      | **Source Information:**
+      | - Customer Tier Program document (s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/customer_tiers.txt)
+      | - Shipping Policy document (s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/shipping_policy.txt)
+
+    [SUB-AGENT 03]  WarrantyRetriever  KB: <REDACTED_WARRANTY_KB_ID>
+      | Based on the NovaMart warranty policy documents, here's the information you requested:
+      | ## **Premium Customer Return Window**
+      | - **60-day return window** (compared to 30 days for standard customers)
+      | ## **Shipping Timing**
+      | - **Free expedited shipping on all orders** for premium customers (standard customers pay standard shipping rates)
+      | ## **Warranty Coverage**
+      | **For Premium Customers:**
+      | - **3-year warranty on electronics** (automatic upgrade from standard)
+      | **General Warranty Coverage includes:**
+      | - Manufacturing defects
+      | - Hardware failures under normal use
+      | - Defective materials
+      | **NOT Covered:**
+      | - Damage from accidents, misuse, or negligence
+      | - Normal wear and tear
+      | - Water damage (unless product is rated waterproof)
+      | - Unauthorized modifications or repairs
+      | - Cosmetic damage (scratches, dents)
+      | **Additional Information:**
+      | - Premium tier is achieved by spending $500+ in a calendar year OR placing 20+ orders in a calendar year
+      | - Premium customers also receive priority customer support (response within 4 hours)
+      | ---
+      | *Sources: customer_tiers.txt and warranty_policy.txt (Last Updated: January 2025)*
+{
+  "toolUseId": "tooluse_search_all_policies_295032093",
+  "status": "success",
+  "content": [
+    {
+      "text": "## Returns Policy\nBased on NovaMart's return policy, here's what I found:\n\n## **Return Window for Premium Customers**\n- **Premium customers: 60-day return window** (compared to 30 days for standard customers)\n- To qualify for Premium tier, customers must spend $500+ in a calendar year OR place 20+ orders in a calendar year\n\n## **Shipping Timing**\n- **Premium customers: Free expedited shipping on all orders**\n- Standard customers pay standard shipping rates (specific timing not detailed in the retrieved passages)\n\n## **Warranty Coverage**\n- **Premium customers: 3-year warranty on electronics**\n- Standard customers: 1-year warranty on electronics\n\n### Additional Premium Benefits:\n- Priority customer support with response within 4 hours\n- Early access to sales and new product launches\n- Dedicated account manager for orders over $500\n\n**Sources:** \n- s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/returns/customer_tiers.txt\n- s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/returns/return_policy.txt\n\n\n## Shipping Policy\nBased on the NovaMart shipping policy documents, here's what I found:\n\n## **Return Window for Premium Customers**\n- **60 days** - Premium tier customers receive an extended 60-day return window (compared to 30 days for standard customers)\n\n## **Shipping Timing**\nPremium customers receive **free expedited shipping on all orders**, which takes **2-3 business days**.\n\nFor context, standard shipping options include:\n- Standard Shipping: 5-7 business days\n- Expedited Shipping: 2-3 business days\n- Overnight Shipping: next business day\n- Same-Day Delivery: available in select metros\n\n**Order Processing**: Orders placed before 2:00 PM EST on business days are processed same day; orders after 2:00 PM EST or on weekends are processed the next business day.\n\n## **Warranty Coverage**\nPremium customers receive a **3-year warranty on electronics** (compared to 1-year warranty for standard customers)\n\n---\n\n**Source Information:**\n- Customer Tier Program document (s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/customer_tiers.txt)\n- Shipping Policy document (s3://udacity-agentcore-policy-docs-<ACCOUNT_ID>-5bdd8a50/policies/shipping/shipping_policy.txt)\n\n\n## Warranty Policy\nBased on the NovaMart warranty policy documents, here's the information you requested:\n\n## **Premium Customer Return Window**\n- **60-day return window** (compared to 30 days for standard customers)\n\n## **Shipping Timing**\n- **Free expedited shipping on all orders** for premium customers (standard customers pay standard shipping rates)\n\n## **Warranty Coverage**\n\n**For Premium Customers:**\n- **3-year warranty on electronics** (automatic upgrade from standard)\n\n**General Warranty Coverage includes:**\n- Manufacturing defects\n- Hardware failures under normal use\n- Defective materials\n\n**NOT Covered:**\n- Damage from accidents, misuse, or negligence\n- Normal wear and tear\n- Water damage (unless product is rated waterproof)\n- Unauthorized modifications or repairs\n- Cosmetic damage (scratches, dents)\n\n**Additional Information:**\n- Premium tier is achieved by spending $500+ in a calendar year OR placing 20+ orders in a calendar year\n- Premium customers also receive priority customer support (response within 4 hours)\n\n---\n*Sources: customer_tiers.txt and warranty_policy.txt (Last Updated: January 2025)*\n"
+    }
+  ]
+}

@@ -32,6 +32,16 @@ REQUIRED_FILES = {
     "docs/RUBRIC_MATRIX.md",
     ".github/workflows/validate.yml",
     ".github/workflows/deploy.yml",
+    "evidence/transcripts/official-all-tasks-sanitized.txt",
+    "evidence/transcripts/official-all-tasks-2026-10-08-original.txt",
+    "evidence/transcripts/task3-runtime-guardrail-sanitized.txt",
+    "evidence/transcripts/task5-kb-retrieval-sanitized.txt",
+    "evidence/transcripts/task6-observability-after-traces-sanitized.txt",
+    "evidence/transcripts/trace-generation-2026-10-08-original.txt",
+    "evidence/screenshots/aws-agentcore-runtime.jpg",
+    "evidence/screenshots/aws-knowledge-bases.jpg",
+    "evidence/screenshots/aws-xray-service-map.png",
+    "evidence/screenshots/official-tests-120-of-120.png",
 }
 
 FORBIDDEN_PATH_PARTS = {
@@ -147,6 +157,34 @@ class PublicRepositoryTests(unittest.TestCase):
         requirements = requirements_path.read_text(encoding="utf-8").lower()
         for package in ("boto3", "bedrock-agentcore", "strands-agents", "python-dotenv"):
             self.assertIn(package, requirements, f"Missing runtime dependency: {package}")
+
+    def test_submission_uses_original_evidence_only(self):
+        """Generated terminal renderings must never be presented as screenshots."""
+        documentation = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (ROOT / "README.md", ROOT / "docs" / "EVIDENCE_REPORT.md")
+        )
+        forbidden_references = {
+            "official-tests-120-of-120-summary.png",
+            "official-tests-120-of-120-summary-redacted.png",
+            "Rendered 120/120 result summary",
+            "presentation rendering",
+        }
+        findings = sorted(
+            reference for reference in forbidden_references if reference in documentation
+        )
+        self.assertFalse(
+            findings,
+            f"Generated evidence references must be removed: {findings}",
+        )
+
+    def test_readme_does_not_use_outdated_architecture_cover(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertNotIn(
+            "diagrams/architecture-overview.png",
+            readme,
+            "The cover contains outdated model labels; use the reviewed Mermaid diagram.",
+        )
 
 
 if __name__ == "__main__":

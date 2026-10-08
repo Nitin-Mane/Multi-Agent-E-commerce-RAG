@@ -10,18 +10,16 @@
 [![Security](https://img.shields.io/badge/security-no_committed_credentials-1F883D)](SECURITY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![NovaMart multi-agent customer-support architecture](diagrams/architecture-overview.png)
-
 This repository contains my Udacity AWS assignment implementation of a multi-agent retrieval-augmented generation (RAG) assistant for an e-commerce customer-support use case. A supervisor coordinates inventory, refund, policy, and communication specialists. The solution uses Amazon Bedrock, Amazon Bedrock Knowledge Bases with S3 Vectors, DynamoDB, S3, Bedrock AgentCore Runtime, AgentCore Memory, CloudWatch, and AWS X-Ray.
 
-The official assignment validation records **120/120**. A fresh end-to-end experiment was also completed in the Udacity AWS sandbox on **October 8, 2026** and produced a connected AWS X-Ray service map. Non-secret account and resource identifiers are included for evaluator traceability; authentication credentials are never committed.
+The preserved official assignment transcript records **120/120** from the Udacity AWS sandbox on **October 8, 2026**. The repository also contains original AWS console captures and a connected X-Ray service map. Non-secret account and resource identifiers are included for evaluator traceability; authentication credentials are never committed.
 
 ## Documentation
 
 | Document | Purpose |
 |---|---|
 | [Architecture](docs/ARCHITECTURE.md) | AWS topology, Agent Graph, Request Flow, Shared `WorkflowState`, and design decisions |
-| [Evidence report](docs/EVIDENCE_REPORT.md) | Verified-result summary, original AWS X-Ray screenshot, experiment details, and evidence interpretation |
+| [Evidence report](docs/EVIDENCE_REPORT.md) | Original AWS screenshots, sanitized raw transcripts, experiment details, and evidence interpretation |
 | [Rubric matrix](docs/RUBRIC_MATRIX.md) | Criterion-level traceability, reviewer sequence, and verification checklist |
 | [Deployment guide](docs/DEPLOYMENT.md) | Provisioning, validation, evidence capture, and cleanup |
 | [CI/CD and lifecycle](docs/CI_CD.md) | GitHub Actions controls, protected AWS delivery, and resource lifecycle |
@@ -51,7 +49,7 @@ Every request begins with `initialize_session`. Account and customer-tier questi
 
 `WorkflowStateTable` is keyed by `session_id` and stores `customer_id`, version, timestamps/TTL, and each agent result. Updates use an `expected_version` condition and retry on conflicts, preventing concurrent workers from silently overwriting newer state.
 
-See [Architecture](docs/ARCHITECTURE.md) for the color-coded deployment topology, Agent Graph, Request Flow, Shared `WorkflowState` diagrams, and role/tool matrix. The cover is a presentation view; `config.py` is authoritative for the submitted Claude Haiku 4.5 and Claude Sonnet 4.5 defaults.
+See [Architecture](docs/ARCHITECTURE.md) for the color-coded deployment topology, Agent Graph, Request Flow, Shared `WorkflowState` diagrams, and role/tool matrix. `config.py` is authoritative for the submitted Claude Haiku 4.5 and Claude Sonnet 4.5 defaults.
 
 ## Project highlights
 
@@ -71,6 +69,7 @@ See [Architecture](docs/ARCHITECTURE.md) for the color-coded deployment topology
 |-- agentcore/                  # Sanitized AgentCore templates and CDK source
 |-- diagrams/                  # Architecture diagrams
 |-- docs/                      # Architecture, evidence, rubric, deployment, and CI/CD guides
+|-- evidence/                  # Original AWS captures and sanitized raw test transcripts
 |-- infrastructure/            # CloudFormation and deployment helpers
 |-- src/                       # Agents, tools, workflow state, and runtime entrypoint
 |-- tests/                     # Assignment and public-repository validation
@@ -169,9 +168,15 @@ The [Live Experiment and Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) do
 
 ### Required submission evidence
 
-- [Rendered 120/120 result summary](diagrams/official-tests-120-of-120-summary.png)
-- [Recorded 120/120 result details](evidence/official_test_results.txt)
-- [Original AWS X-Ray service-map screenshot](diagrams/aws-xray-service-map-original.jpg)
+- [Original 120/120 terminal screenshot](evidence/screenshots/official-tests-120-of-120.png)
+- [Sanitized raw 120/120 transcript](evidence/transcripts/official-all-tasks-sanitized.txt)
+- [Original AgentCore Runtime screenshot](evidence/screenshots/aws-agentcore-runtime.jpg)
+- [Original Knowledge Bases screenshot](evidence/screenshots/aws-knowledge-bases.jpg)
+- [Original AWS X-Ray service-map screenshot](evidence/screenshots/aws-xray-service-map.png)
+- [Task 3 runtime and guardrail transcript](evidence/transcripts/task3-runtime-guardrail-sanitized.txt)
+- [Task 5 three-domain retrieval transcript](evidence/transcripts/task5-kb-retrieval-sanitized.txt)
+- [Task 6 observability transcript](evidence/transcripts/task6-observability-after-traces-sanitized.txt)
+- [Fresh live trace-generation transcript](evidence/transcripts/trace-generation-2026-10-08-original.txt)
 - [Populated non-secret `.env`](.env)
 - [Detailed evidence report](docs/EVIDENCE_REPORT.md)
 
