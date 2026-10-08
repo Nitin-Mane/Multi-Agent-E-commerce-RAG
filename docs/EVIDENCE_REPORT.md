@@ -80,8 +80,6 @@ The screenshot intentionally shows the Udacity account number so the evaluator c
 
 ## Architecture and request-flow evidence
 
-![NovaMart multi-agent architecture overview](../diagrams/architecture-overview.png)
-
 ![Order, policy, and direct-answer request flows](../diagrams/request-flow-scenarios.png)
 
 The implementation-level Mermaid diagrams and role/tool matrix are in [System Architecture](SYSTEM_ARCHITECTURE.md). Design rationale for the Agent Graph, Request Flow, and Shared `WorkflowState` is in [Architecture Notes](ARCHITECTURE.md).
