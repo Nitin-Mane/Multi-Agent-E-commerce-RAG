@@ -178,12 +178,12 @@ class PublicRepositoryTests(unittest.TestCase):
             f"Generated evidence references must be removed: {findings}",
         )
 
-    def test_readme_does_not_use_outdated_architecture_cover(self):
+    def test_readme_uses_the_architecture_cover(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertNotIn(
-            "diagrams/architecture-overview.png",
+        self.assertIn(
+            "![NovaMart multi-agent customer-support architecture](diagrams/architecture-overview.png)",
             readme,
-            "The cover contains outdated model labels; use the reviewed Mermaid diagram.",
+            "The repository cover must remain visible in the README.",
         )
 
 

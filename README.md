@@ -10,6 +10,10 @@
 [![Security](https://img.shields.io/badge/security-no_committed_credentials-1F883D)](SECURITY.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+![NovaMart multi-agent customer-support architecture](diagrams/architecture-overview.png)
+
+*NovaMart project cover and conceptual agent topology. The reviewed Mermaid diagrams below and `config.py` are authoritative for the submitted architecture and model configuration.*
+
 This repository contains my Udacity AWS assignment implementation of a multi-agent retrieval-augmented generation (RAG) assistant for an e-commerce customer-support use case. A supervisor coordinates inventory, refund, policy, and communication specialists. The solution uses Amazon Bedrock, Amazon Bedrock Knowledge Bases with S3 Vectors, DynamoDB, S3, Bedrock AgentCore Runtime, AgentCore Memory, CloudWatch, and AWS X-Ray.
 
 The preserved official assignment transcript records **120/120** from the Udacity AWS sandbox on **October 8, 2026**. The repository also contains original AWS console captures and a connected X-Ray service map. Non-secret account and resource identifiers are included for evaluator traceability; authentication credentials are never committed.
@@ -28,6 +32,32 @@ The preserved official assignment transcript records **120/120** from the Udacit
 
 The application uses a hub-and-spoke design:
 
+```mermaid
+flowchart TB
+    Client([Customer / API client]) --> Runtime[Amazon Bedrock<br/>AgentCore Runtime]
+    Runtime --> Guardrail[Amazon Bedrock Guardrail]
+    Guardrail --> O[OrchestratorAgent]
+    O --> I[InventoryAgent]
+    O --> P[PolicyAgent]
+    O --> R[RefundAgent]
+    O --> C[CommunicationAgent]
+    I --> Commerce[(Orders and Customers<br/>DynamoDB)]
+    R --> Commerce
+    P --> KB[(Three Bedrock Knowledge Bases<br/>with S3 Vectors)]
+    O <--> State[(WorkflowStateTable)]
+    Runtime <--> Memory[AgentCore Memory]
+    Runtime --> Observe[CloudWatch and AWS X-Ray]
+
+    classDef control fill:#146EB4,color:#fff,stroke:#0B4F86,stroke-width:2px;
+    classDef worker fill:#6B3FD4,color:#fff,stroke:#4A2A96,stroke-width:2px;
+    classDef data fill:#E8F1FB,color:#172B4D,stroke:#146EB4,stroke-width:2px;
+    classDef ops fill:#E9F7EF,color:#173F2A,stroke:#1F883D,stroke-width:2px;
+    class Runtime,Guardrail,O control;
+    class I,P,R,C worker;
+    class Commerce,KB,State,Memory data;
+    class Observe ops;
+```
+
 - `OrchestratorAgent` initializes the session, routes each request, and coordinates the final response.
 - `InventoryAgent` uses three DynamoDB-backed tools for order and customer context.
 - `RefundAgent` validates refund eligibility and updates order state.
@@ -41,13 +71,75 @@ The agents use Amazon Bedrock models through the Strands Agents SDK. Independent
 
 The graph follows the Udacity-specified Orchestrator → Workers pattern. The Haiku orchestrator exposes five routing tools; the four Sonnet workers own inventory lookup, policy RAG, refund decisions, and final communication. The PolicyAgent is itself a coordinator for three parallel retriever sub-agents.
 
+```mermaid
+flowchart LR
+    O[OrchestratorAgent] -->|facts| I[InventoryAgent]
+    O -->|policy| P[PolicyAgent]
+    O -->|decision| R[RefundAgent]
+    O -->|always last| C[CommunicationAgent]
+    P --> F{ThreadPoolExecutor}
+    F --> RK[Returns KB]
+    F --> SK[Shipping KB]
+    F --> WK[Warranty KB]
+
+    classDef orchestrator fill:#146EB4,color:#fff,stroke:#0B4F86,stroke-width:2px;
+    classDef worker fill:#6B3FD4,color:#fff,stroke:#4A2A96,stroke-width:2px;
+    classDef retrieval fill:#007A78,color:#fff,stroke:#005C5A,stroke-width:2px;
+    class O orchestrator;
+    class I,P,R,C worker;
+    class F,RK,SK,WK retrieval;
+```
+
 ### Request Flow
 
 Every request begins with `initialize_session`. Account and customer-tier questions use InventoryAgent and never PolicyAgent. Order-status questions use InventoryAgent followed by RefundAgent for status or eligibility evaluation only; a refund is initiated only when the customer explicitly asks for one. Policy-only questions use PolicyAgent, and CommunicationAgent is always the final worker. Results are written to shared state between steps instead of being passed only through prompts.
 
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer
+    participant Runtime as AgentCore Runtime
+    participant O as OrchestratorAgent
+    participant State as WorkflowStateTable
+    participant Worker as Required specialist(s)
+    participant C as CommunicationAgent
+    Customer->>Runtime: request + session_id + customer_id
+    Runtime->>O: validated payload
+    O->>State: initialize_session()
+    O->>Worker: route according to intent
+    Worker->>State: conditional result update
+    Worker-->>O: focused structured result
+    O->>C: final communication route
+    C->>State: read accumulated context
+    C-->>Runtime: customer-ready response
+    Runtime-->>Customer: guarded response
+```
+
 ### Shared WorkflowState
 
 `WorkflowStateTable` is keyed by `session_id` and stores `customer_id`, version, timestamps/TTL, and each agent result. Updates use an `expected_version` condition and retry on conflicts, preventing concurrent workers from silently overwriting newer state.
+
+```mermaid
+flowchart LR
+    Create[Initialize session] --> Read[Worker reads state]
+    Read --> Execute[Worker produces result]
+    Execute --> Write{Expected version<br/>still current?}
+    Write -->|yes| Commit[Store result and<br/>increment version]
+    Write -->|no| Reload[Reload and retry]
+    Reload --> Write
+    Commit --> Next{More workers?}
+    Next -->|yes| Read
+    Next -->|no| Complete[Compose final response]
+
+    classDef action fill:#146EB4,color:#fff,stroke:#0B4F86,stroke-width:2px;
+    classDef decision fill:#FFB000,color:#111827,stroke:#B36B00,stroke-width:2px;
+    classDef success fill:#1F883D,color:#fff,stroke:#116329,stroke-width:2px;
+    classDef retry fill:#C93756,color:#fff,stroke:#8E243B,stroke-width:2px;
+    class Create,Read,Execute action;
+    class Write,Next decision;
+    class Commit,Complete success;
+    class Reload retry;
+```
 
 See [Architecture](docs/ARCHITECTURE.md) for the color-coded deployment topology, Agent Graph, Request Flow, Shared `WorkflowState` diagrams, and role/tool matrix. `config.py` is authoritative for the submitted Claude Haiku 4.5 and Claude Sonnet 4.5 defaults.
 
