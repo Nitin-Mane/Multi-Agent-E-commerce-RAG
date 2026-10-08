@@ -2,7 +2,7 @@
 
 ## Reviewer summary
 
-This report is the evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. The previous review failed because the GitHub archive did not contain the required AWS X-Ray Service Map image. The repository now includes the missing original console evidence, the original 120/120 result, the populated non-secret `.env`, source code, and a direct mapping from every artifact to the rubric.
+This report is the evidence index for the Udacity **Multi-Agent E-commerce RAG** submission. The previous review failed because the GitHub archive did not contain the required AWS X-Ray Service Map image. The repository now includes that original console capture, a clearly labeled rendering of the recorded 120/120 result, the retained result record, the populated non-secret `.env`, source code, and a direct mapping from every artifact to the rubric.
 
 ## Environment verified
 
@@ -63,9 +63,9 @@ After the run, CloudWatch X-Ray was refreshed with the **5 minute** range in `us
 
 This is an original AWS Console capture, not a Mermaid diagram or a reconstructed graphic. The live map was regenerated and visually rechecked after the fresh experiment above.
 
-## Required official test evidence
+## Recorded official test result
 
-![Original official assignment test result showing 120 out of 120](../diagrams/official-tests-120-of-120-original.png)
+![Rendered summary of the recorded official assignment test result showing 120 out of 120](../diagrams/official-tests-120-of-120-summary.png)
 
 | Task | Rubric area | Recorded score |
 |---|---|---:|
@@ -76,13 +76,11 @@ This is an original AWS Console capture, not a Mermaid diagram or a reconstructe
 | Task 6 | CloudWatch and X-Ray observability | 20/20 |
 | **Total** | **Official rubric verification** | **120/120** |
 
-The screenshot intentionally shows the Udacity account number so the evaluator can correlate the result with the deployed sandbox. A sanitized copy remains available as `diagrams/official-tests-120-of-120-redacted.png` for contexts where the account number is unnecessary.
+This is a presentation rendering of the retained result record, not an original terminal screenshot. The source record is available as [`evidence/official_test_results.txt`](../evidence/official_test_results.txt). The rendering intentionally shows the Udacity account number so the evaluator can correlate the result with the deployed sandbox. A sanitized rendering remains available as `diagrams/official-tests-120-of-120-summary-redacted.png` for contexts where the account number is unnecessary.
 
-## Architecture and request-flow evidence
+## Architecture cross-reference
 
-![Order, policy, and direct-answer request flows](../diagrams/request-flow-scenarios.png)
-
-The implementation-level Mermaid diagrams and role/tool matrix are in [System Architecture](SYSTEM_ARCHITECTURE.md). Design rationale for the Agent Graph, Request Flow, and Shared `WorkflowState` is in [Architecture Notes](ARCHITECTURE.md).
+The [Architecture document](ARCHITECTURE.md#request-flow) owns the request-flow figure, Mermaid diagrams, role/tool matrix, and Shared `WorkflowState` explanation. This evidence report keeps observed execution evidence together: the original X-Ray console capture, the rendered score summary, and its retained result record.
 
 ## Evidence-to-source traceability
 
@@ -98,23 +96,14 @@ The implementation-level Mermaid diagrams and role/tool matrix are in [System Ar
 | Distributed tracing | `src/agent_observability.py` | Official Task 6, fresh trace IDs, X-Ray screenshot |
 | No published AWS credentials | repository safety test | `python -m unittest tests.test_public_repository -v` |
 
-## Recommended evaluator sequence
-
-1. Open the root [README](../README.md) and confirm the required-artifact links.
-2. Inspect the populated [`.env`](../.env); confirm resource IDs are present and credential variables are absent.
-3. Inspect `src/agent_orchestrator.py` for the completed orchestration, worker, state, retrieval, deployment, and tracing implementation.
-4. Review the original 120/120 image above.
-5. Review the original X-Ray image above and follow the visible call chain from `NovaMart-Orchestrator` to Policy and Knowledge Base nodes.
-6. Review [Rubric Matrix](RUBRIC_MATRIX.md) for criterion-level source references.
-7. If temporary AWS credentials are available, rerun `python src/agent_orchestrator.py test`, wait up to five minutes, and refresh the X-Ray 5-minute map.
-
 ## Security boundary
 
 Included for evaluation:
 
 - Udacity AWS account number
 - Guardrail, Knowledge Base, runtime, request, and trace identifiers
-- original AWS console screenshots
+- original AWS X-Ray console screenshot
+- rendered 120/120 summary and retained result record
 - populated non-secret `.env`
 
 Never included:

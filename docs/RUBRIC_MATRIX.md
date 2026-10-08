@@ -22,7 +22,42 @@ The matrix maps each assignment area to inspectable code and validation. Point t
 - `tests/test_agent.py task2` is credential-free and repeatable from a local clone.
 - Tasks 3-6 are integration checks and need provisioned AWS resources plus local ignored identifiers.
 - Public-repository checks verify that required evaluator documentation exists and common sensitive-data patterns are absent.
-- Account-specific screenshots belong in the private course submission, not in this public repository.
+- The course repository includes the original account-specific X-Ray screenshot, the rendered 120/120 summary, and its retained result record; authentication credentials remain excluded.
+
+## Recommended evaluator sequence
+
+1. Read the root [README](../README.md) for scope, setup, and the disclosed model-entitlement limitation.
+2. Review [Architecture](ARCHITECTURE.md) for the AWS topology, Agent Graph, Request Flow, Shared `WorkflowState`, and role/tool boundaries.
+3. Inspect `src/agent_orchestrator.py` for completed orchestration, worker, state, retrieval, deployment, and tracing logic.
+4. Review the recorded **120/120** result summary and original AWS X-Ray Service Map in the [Evidence Report](EVIDENCE_REPORT.md).
+5. Inspect the populated [`.env`](../.env) and confirm that resource IDs are present while credential variables are absent.
+6. Run the credential-free validation commands below.
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE = "1"
+$env:PYTHONUTF8 = "1"
+python -m unittest tests.test_public_repository tests.test_documentation_structure -v
+python tests\test_agent.py task2
+```
+
+Run the AWS-backed suite only with authorized temporary credentials and deployed resources:
+
+```powershell
+python tests\test_agent.py all
+```
+
+## Evaluator checklist
+
+- Confirm the inventory, refund, policy, and communication agents have distinct prompts and tool boundaries.
+- Confirm policy retrieval fans out to returns, shipping, and warranty knowledge bases and retains source metadata.
+- Confirm workflow state is stored in DynamoDB and session summaries use AgentCore Memory.
+- Confirm account/tier requests use InventoryAgent and never PolicyAgent.
+- Confirm order status routes InventoryAgent -> RefundAgent -> CommunicationAgent without initiating an unrequested refund.
+- Confirm CommunicationAgent is the final worker for every route.
+- Confirm the AgentCore HTTP entrypoint accepts a structured request.
+- Confirm `.env` contains required non-secret resource IDs and no AWS credential values.
+- Confirm the X-Ray image shows `NovaMart-Orchestrator` connected to workers and Knowledge Base nodes.
+- Confirm cleanup guidance identifies the chargeable AWS resources.
 
 ## Limit disclosure
 

@@ -55,7 +55,7 @@ The `Validate` workflow runs on pushes and pull requests to `main`. It has only 
 
 1. Installs Python 3.12 and development dependencies.
 2. Runs core Ruff correctness rules and compiles the Python sources.
-3. Rejects committed credentials, account identifiers, private runtime configuration, and generated deployment output.
+3. Rejects committed credentials, private runtime configuration, generated deployment output, and broken documentation structure.
 4. Verifies secure defaults, model configuration, and the six-rule routing contract.
 5. Executes the credential-free Task 2 assignment suite.
 6. Builds and tests the AgentCore CDK project with Node.js 20.

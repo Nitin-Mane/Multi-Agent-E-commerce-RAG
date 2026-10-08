@@ -1,6 +1,6 @@
-# Architecture Notes
+# System Architecture
 
-This document explains the implementation decisions behind NovaMart's multi-agent customer-support workflow. For the deployment-level AWS view, see [System Architecture](SYSTEM_ARCHITECTURE.md).
+This is the canonical technical architecture for NovaMart's multi-agent customer-support workflow. It combines the AWS deployment topology, agent relationships, request sequencing, shared state, and design rationale in one place.
 
 ## Architecture overview
 
@@ -46,7 +46,7 @@ flowchart TB
 
 The solution separates coordination from domain work. The orchestrator owns routing and sequencing, while each worker owns a narrow prompt and minimal tool surface. This makes routing independently testable and keeps policy retrieval, transactional work, and customer communication from becoming one oversized prompt.
 
-## Agent and retrieval design
+## Agent Graph
 
 ```mermaid
 flowchart LR
@@ -79,7 +79,15 @@ flowchart LR
 
 The PolicyAgent fans out to three independent retrievers and joins their results before synthesis. The retrieval wrapper isolates Bedrock Knowledge Bases API details from agent prompts, keeping the agent focused on reasoning over grounded passages.
 
-## Request flow
+| Agent | Responsibility | Tools |
+|---|---|---|
+| OrchestratorAgent | Initialize state, choose specialists, enforce routing, and call Communication last | `initialize_session`, four `route_to_*` tools |
+| InventoryAgent | Retrieve order and customer facts without making policy decisions | `check_order_status`, `get_customer_tier`, `list_customer_orders` |
+| PolicyAgent | Retrieve three policy domains concurrently and synthesize grounded context | `search_all_policies` |
+| RefundAgent | Evaluate status/eligibility and initiate only an explicitly requested eligible refund | `get_inventory_context`, `initiate_refund` |
+| CommunicationAgent | Read accumulated state and compose the customer-facing response | `get_full_workflow_context` |
+
+## Request Flow
 
 ```mermaid
 sequenceDiagram
@@ -124,7 +132,7 @@ CommunicationAgent is always the final worker. An order-status route through Ref
 
 *Figure 1 — Representative execution paths. Every path uses shared workflow state and ends with CommunicationAgent.*
 
-## Shared state and consistency
+## Shared WorkflowState
 
 ```mermaid
 flowchart LR
@@ -155,11 +163,7 @@ AgentCore Memory is complementary rather than duplicated storage: DynamoDB holds
 
 ## Verification evidence
 
-![Sanitized official rubric verification showing 120 out of 120](../diagrams/official-tests-120-of-120-redacted.png)
-
-*Figure 2 — Sanitized rendering of the recorded official rubric result. The AWS account number is intentionally redacted; the original evidence remains in the private submission package.*
-
-The recorded rubric run reports **120/120** across the multi-agent graph, AgentCore runtime and guardrail, AgentCore Memory, knowledge bases, and observability. This score verifies the rubric checks captured in the private evidence; it does not claim a successful live-model response where the Udacity sandbox lacked the required model entitlement.
+The original AWS console capture and the **120/120** result summary are maintained once in the [Evidence Report](EVIDENCE_REPORT.md). Keeping execution evidence separate from design diagrams makes the distinction between intended architecture and observed AWS behavior explicit.
 
 ## Safety and operations
 

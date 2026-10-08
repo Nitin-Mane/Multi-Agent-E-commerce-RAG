@@ -1,0 +1,35 @@
+AWS Assignment 03 - Official Rubric Test Evidence
+=================================================
+Project: Multi-Agent E-commerce RAG
+Execution date: 2026-10-07
+AWS account: 028612373481 (Udacity classroom account)
+Region: us-east-1
+
+Verification results
+--------------------
+Python compilation                                      PASS
+Task 2 - Multi-agent graph                         40 / 40
+Task 3 - Guardrail and AgentCore runtime           20 / 20
+Task 4 - AgentCore Memory                          15 / 15
+Task 5 - Three knowledge bases and retrieval       25 / 25
+Task 6 - CloudWatch and X-Ray observability        20 / 20
+                                                     ------
+TOTAL SCORE                                       120 / 120
+
+Verified resource state
+-----------------------
+Foundation stack: udacity-agentcore - CREATE_COMPLETE
+Runtime stack: AgentCore-udacity-default - UPDATE_COMPLETE
+Runtime: udacity_agentcore_runtime-u71naiDhDx - READY
+Memory: udacity_agentcore_memory-pfNuvkDSau - ACTIVE
+Returns KB: NYXVNW9GJN - ACTIVE and synchronized
+Shipping KB: BTHTUIKUYI - ACTIVE and synchronized
+Warranty KB: JHJBT4FYVM - ACTIVE and synchronized
+Guardrail: up6axh4lt0of, published version 1
+
+Scope note
+----------
+The 120/120 result covers the official automated rubric checks. A separate live
+runtime invocation reached AgentCore and produced logs/tracing, but the final
+Claude Haiku 4.5 call was denied because the Udacity identity cannot perform
+the AWS Marketplace subscription actions required for that model.

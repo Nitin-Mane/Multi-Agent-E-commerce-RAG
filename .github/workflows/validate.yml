@@ -46,6 +46,9 @@ jobs:
       - name: Validate public repository policy
         run: python -m unittest tests.test_public_repository -v
 
+      - name: Validate documentation structure
+        run: python -m unittest tests.test_documentation_structure -v
+
       - name: Validate secure defaults
         run: python -m unittest tests.test_security_defaults -v
 

@@ -16,36 +16,15 @@ This repository contains my Udacity AWS assignment implementation of a multi-age
 
 The official assignment validation records **120/120**. A fresh end-to-end experiment was also completed in the Udacity AWS sandbox on **October 8, 2026** and produced a connected AWS X-Ray service map. Non-secret account and resource identifiers are included for evaluator traceability; authentication credentials are never committed.
 
-```mermaid
-flowchart TD
-    Client[Customer request] --> Runtime[Amazon Bedrock AgentCore Runtime]
-    Runtime --> Guardrail[Amazon Bedrock Guardrail]
-    Guardrail --> Orchestrator[OrchestratorAgent<br/>Claude Haiku 4.5]
-    Orchestrator --> Inventory[InventoryAgent<br/>Claude Sonnet 4.5]
-    Orchestrator --> Refund[RefundAgent<br/>Claude Sonnet 4.5]
-    Orchestrator --> Policy[PolicyAgent<br/>Claude Sonnet 4.5]
-    Orchestrator --> Communication[CommunicationAgent<br/>Claude Sonnet 4.5]
-    Policy --> Returns[Returns KB]
-    Policy --> Shipping[Shipping KB]
-    Policy --> Warranty[Warranty KB]
-    Orchestrator <--> State[(DynamoDB Workflow State)]
-    Runtime <--> Memory[AgentCore Memory]
-    Runtime --> Observability[CloudWatch Logs and AWS X-Ray]
-    Communication --> Runtime
+## Documentation
 
-    classDef entry fill:#232F3E,color:#FFFFFF,stroke:#8FA7C1,stroke-width:2px;
-    classDef managed fill:#146EB4,color:#FFFFFF,stroke:#0B4F86,stroke-width:2px;
-    classDef agent fill:#6B3FD4,color:#FFFFFF,stroke:#4A2A96,stroke-width:2px;
-    classDef retrieval fill:#007A78,color:#FFFFFF,stroke:#005C5A,stroke-width:2px;
-    classDef data fill:#FF9900,color:#111827,stroke:#B36B00,stroke-width:2px;
-    classDef observe fill:#1F883D,color:#FFFFFF,stroke:#116329,stroke-width:2px;
-    class Client entry;
-    class Runtime,Guardrail,Orchestrator managed;
-    class Inventory,Refund,Policy,Communication agent;
-    class Returns,Shipping,Warranty retrieval;
-    class State,Memory data;
-    class Observability observe;
-```
+| Document | Purpose |
+|---|---|
+| [Architecture](docs/ARCHITECTURE.md) | AWS topology, Agent Graph, Request Flow, Shared `WorkflowState`, and design decisions |
+| [Evidence report](docs/EVIDENCE_REPORT.md) | Verified-result summary, original AWS X-Ray screenshot, experiment details, and evidence interpretation |
+| [Rubric matrix](docs/RUBRIC_MATRIX.md) | Criterion-level traceability, reviewer sequence, and verification checklist |
+| [Deployment guide](docs/DEPLOYMENT.md) | Provisioning, validation, evidence capture, and cleanup |
+| [CI/CD and lifecycle](docs/CI_CD.md) | GitHub Actions controls, protected AWS delivery, and resource lifecycle |
 
 ## Architecture
 
@@ -72,7 +51,7 @@ Every request begins with `initialize_session`. Account and customer-tier questi
 
 `WorkflowStateTable` is keyed by `session_id` and stores `customer_id`, version, timestamps/TTL, and each agent result. Updates use an `expected_version` condition and retry on conflicts, preventing concurrent workers from silently overwriting newer state.
 
-See [System Architecture](docs/SYSTEM_ARCHITECTURE.md) for the color-coded deployment topology, Agent Graph, Request Flow, Shared WorkflowState diagrams, and role/tool matrix. The cover is a presentation view; `config.py` is authoritative for the submitted Claude Haiku 4.5 and Claude Sonnet 4.5 defaults.
+See [Architecture](docs/ARCHITECTURE.md) for the color-coded deployment topology, Agent Graph, Request Flow, Shared `WorkflowState` diagrams, and role/tool matrix. The cover is a presentation view; `config.py` is authoritative for the submitted Claude Haiku 4.5 and Claude Sonnet 4.5 defaults.
 
 ## Project highlights
 
@@ -91,7 +70,7 @@ See [System Architecture](docs/SYSTEM_ARCHITECTURE.md) for the color-coded deplo
 .
 |-- agentcore/                  # Sanitized AgentCore templates and CDK source
 |-- diagrams/                  # Architecture diagrams
-|-- docs/                      # Evaluator, rubric, deployment, and design guides
+|-- docs/                      # Architecture, evidence, rubric, deployment, and CI/CD guides
 |-- infrastructure/            # CloudFormation and deployment helpers
 |-- src/                       # Agents, tools, workflow state, and runtime entrypoint
 |-- tests/                     # Assignment and public-repository validation
@@ -150,6 +129,7 @@ Run the repository safety and structure checks without AWS credentials:
 $env:PYTHONDONTWRITEBYTECODE = "1"
 $env:PYTHONUTF8 = "1"
 python -m unittest tests.test_public_repository -v
+python -m unittest tests.test_documentation_structure -v
 python -m unittest tests.test_security_defaults -v
 python tests\run_task2_ci.py
 ```
@@ -181,15 +161,16 @@ See [CI/CD Guide](docs/CI_CD.md) for setup, controls, and the parts of AgentCore
 | Task 4 - AgentCore Memory | Memory deployment and seven-day summary strategy | 15/15 |
 | Task 5 - knowledge bases | `src/bedrock_kb_retrieval.py`, `infrastructure/` | 25/25 |
 | Task 6 - observability | `src/agent_observability.py`, CloudWatch and X-Ray configuration | 20/20 |
-| **Total** | Automated rubric validation, rechecked October 8, 2026 | **120/120** |
+| **Total** | Automated rubric validation recorded October 7, 2026 | **120/120** |
 
-The detailed criterion-to-evidence mapping is in [Rubric Matrix](docs/RUBRIC_MATRIX.md), and the recommended review sequence is in [Evaluator Guide](docs/EVALUATOR_GUIDE.md).
+The [Rubric Matrix](docs/RUBRIC_MATRIX.md) contains the detailed criterion-to-evidence mapping, recommended review sequence, and evaluator checklist.
 
-The [Live Experiment and Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) documents the AWS account, region, exact commands, model configuration, trace IDs, resource identifiers, screenshots, rubric mapping, and reviewer verification sequence.
+The [Live Experiment and Screenshot Evidence Report](docs/EVIDENCE_REPORT.md) documents the AWS account, region, exact commands, model configuration, trace IDs, resource identifiers, screenshots, and evidence-to-source traceability.
 
 ### Required submission evidence
 
-- [Original 120/120 test screenshot](diagrams/official-tests-120-of-120-original.png)
+- [Rendered 120/120 result summary](diagrams/official-tests-120-of-120-summary.png)
+- [Recorded 120/120 result details](evidence/official_test_results.txt)
 - [Original AWS X-Ray service-map screenshot](diagrams/aws-xray-service-map-original.jpg)
 - [Populated non-secret `.env`](.env)
 - [Detailed evidence report](docs/EVIDENCE_REPORT.md)
